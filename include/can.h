@@ -11,6 +11,7 @@ public:
 
     static bool canActive;
     static CAN_message_t shift_msg;
+    static bool startLapTime;
 
     static FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can0;
 
@@ -22,7 +23,31 @@ public:
 
     static void send_shift(const bool up, const bool down,const bool button3);
 
+    static double haversine(double lat1, double lon1, double lat2, double lon2);
+
+
+    static void lapTime(const bool button);
+
     static void task();
+
+    static double longitude;
+    static double latitude;
+    static double startLongitude;
+    static double startLatitude;
+    static bool lapStarted;
+    static uint64_t lapStartTime;
+    
+    static bool isInStartZone;
+
+    static bool wasInZone;
+
+    static double lapTimeSeconds;
+
+    static double lapTimeEnd;
+
+    
+    
+
 };
 
 #endif //CAN_

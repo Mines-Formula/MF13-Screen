@@ -54,6 +54,7 @@ private:
     static char gear;
     static uint16_t prevmph;
     static uint16_t currentMessage;
+    static double prevLapTime;
 public:
     NextionInterface();
 
@@ -72,6 +73,7 @@ public:
     static void setRPM(uint16_t value);
 
     static void setGear(int gear);
+    
 
     static void setButtonImage(String elementName, bool value);
 
@@ -90,6 +92,8 @@ public:
     static void setLambda(float value);
 
     static void setNeutral(bool value);
+
+    static void setLapTime(double lapTime);
 
     static void switchToLoading();
     static void switchToStartUp();

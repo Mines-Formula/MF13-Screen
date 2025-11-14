@@ -3,9 +3,6 @@
 #include <IntervalTimer.h>
 
 
-// Define the callback function
-void buttonsCallback();
- void shifterCallback();
 // Create an IntervalTimer object
 IntervalTimer timer;
 
@@ -16,6 +13,7 @@ int const button3 = 44;
 int const button4 = 45;
 int const button5 = 6;
 int const button6 = 9;
+int const button = 43;
 
 void setup() {
   //Inits buttons
@@ -25,6 +23,7 @@ void setup() {
   pinMode(button4,INPUT_PULLUP);
   pinMode(button5,INPUT_PULLUP);
   pinMode(button6,INPUT_PULLUP);
+  pinMode(button, INPUT_PULLUP);
   
   Serial.begin(9600);
   //Starts Nextion
@@ -44,6 +43,7 @@ void setup() {
   //Switches to the driver screen
 
   timer.begin(shifterCallback, 20000); // 20,000 microseconds = 20 milliseconds = 50 Hz
+  timer.begin(lapTimeButton, 100000);
 }
 
 void loop() {
@@ -91,4 +91,10 @@ void shifterCallback() { // This function will be called every 20 milliseconds (
   }
 
   CanInterface::send_shift(shiftUpState, shiftDownState,button3State);
+}
+void lapTimeButton(){
+  if(digitalRead(button) == 1){
+    CanInterface::lapTime(true);
+  }
+  else CanInterface::lapTime(false);
 }

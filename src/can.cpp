@@ -2,12 +2,27 @@
 
 #include "nextion.h"
 #include "neopixel.h"
+#include <cmath>
 
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> CanInterface::Can0; //Declare Object CanInterface
 
 CanInterface::CanInterface(){
     // deprecated function
 }
+double CanInterface::longitude = 0.0;
+double CanInterface::latitude = 0.0;
+double CanInterface::startLongitude = 0.0;
+double CanInterface::startLatitude = 0.0;
+
+bool CanInterface::lapStarted = false;
+uint64_t CanInterface::lapStartTime = 0;
+
+bool CanInterface::isInStartZone = false;
+bool CanInterface::wasInZone   = false;
+static const double MIN_LAP_MS = 10000.0;
+static const double RADIUS_METERS = 10.0;
+double CanInterface::lapTimeSeconds = 0;
+double CanInterface::lapTimeEnd = 0;
 
 CAN_message_t CanInterface::shift_msg; //Receives message from teensy
 bool CanInterface::canActive = false;
@@ -22,6 +37,8 @@ bool CanInterface::init(){ // Init Can Interface Probaly dont change lol
     Can0.enableFIFO();
     Can0.enableFIFOInterrupt();
     Can0.onReceive(receive_can_updates);
+    lapStarted = false;
+    
     return 1;
 }
 //Declares cases for each of the following i.e. Overrun sets up an overflow flags
@@ -47,7 +64,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
         // 1600: RPM
         case 1600: {
             uint16_t rpm = (msg.buf[1] | (msg.buf[0] << 8));
-            uint16_t speed = (msg.buf[2]);
+            //uint16_t speed = (msg.buf[2]);
             NextionInterface::setRPM(rpm);
             // NextionInterface::setSpeed(speed);
             RevLights::updateLights(rpm);
@@ -148,6 +165,26 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
             break;
 
+        
+        // Longitude and Latitude
+        case 1664:{
+
+            int32_t lat_raw =
+            ((int32_t)msg.buf[0] << 24) |
+            ((int32_t)msg.buf[1] << 16) |
+            ((int32_t)msg.buf[2] << 8)  |
+            (int32_t)msg.buf[3];
+
+            int32_t lon_raw =
+            ((int32_t)msg.buf[4] << 24) |
+            ((int32_t)msg.buf[5] << 16) |
+            ((int32_t)msg.buf[6] << 8)  |
+            (int32_t)msg.buf[7];
+
+            latitude  = (double)lat_raw * 1e-7;
+            longitude = (double)lon_raw * 1e-7;
+            
+        }
         // 2047: “Any warnings present” message
         case 2047: 
             if(msg.buf != 0){
@@ -159,6 +196,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
         default: 
             break;
         
+
     }
 }
 void CanInterface::send_shift(const bool up, const bool down,const bool button3){
@@ -197,4 +235,49 @@ void CanInterface::send_shift(const bool up, const bool down,const bool button3)
 
 void CanInterface::task(){
     Can0.events();
+}
+
+double toRadians(double degree){
+    return degree * M_PI / 180;
+}
+
+double CanInterface::haversine(double lat1, double lon1, double lat2, double lon2){
+    const double R = 6371.0;
+    lat1 = toRadians(lat1);
+    lon1 = toRadians(lon1);
+    lat2 = toRadians(lat2);
+    lon2 = toRadians(lon2);
+
+    double dLat = lat2 - lat1;
+    double dLon = lon2 - lon1;
+    double a = std::sin(dLat / 2) * std::sin(dLat / 2) + std::cos(lat1) * std::cos(lat2) * std::sin(dLon / 2) * std::sin(dLon / 2);
+    double c = 2 * std::atan2(std::sqrt(a), std::sqrt(1 - a));
+
+    double distance = R * c;
+
+    return distance;
+
+}
+void CanInterface::lapTime(const bool button){
+    if(button &&(longitude >= 24.5) && (latitude >= 67) && (longitude <=49.5) && (latitude <= 125)){
+        startLongitude = longitude;
+        startLatitude = latitude;
+        lapStarted = true;
+        lapStartTime = millis();
+    }
+    isInStartZone = haversine(latitude, longitude, startLatitude, startLongitude) < RADIUS_METERS;
+    if(lapStarted && !wasInZone && isInStartZone && (millis() - lapStartTime > MIN_LAP_MS) && (startLongitude != 0) && (startLatitude != 0)){
+        lapTimeEnd = millis();
+        lapTimeSeconds = 0;
+        lapStartTime = lapTimeEnd;
+        NextionInterface::setLapTime(0.0);
+    }
+    else if ((startLongitude != 0) && (startLatitude != 0)){
+        lapTimeSeconds = (millis() / 1000.0);
+        lapTimeSeconds = std::round(lapTimeSeconds * 100.f) / 100.f;
+        NextionInterface::setLapTime(lapTimeSeconds); 
+    }
+    wasInZone = isInStartZone;
+
+
 }

@@ -9,5 +9,8 @@
 extern CanInterface can;
 extern NextionInterface screen;
 extern RevLights revLights;
+void buttonsCallback();
+void shifterCallback();
+void lapTimeButton();
 
 #endif //MAIN_H 

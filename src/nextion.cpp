@@ -2,8 +2,8 @@
 //Inits Nextion as Loading Screen
 page NextionInterface::current_page = page::LOADING;
 //Sets initial value
-uint8_t NextionInterface::waterTemp = 999;
-uint8_t NextionInterface::oilTemp = 999;
+uint8_t NextionInterface::waterTemp = 231;
+uint8_t NextionInterface::oilTemp = 231;
 uint16_t NextionInterface::oilPressure = 999;
 float NextionInterface::batteryVoltage = 999;
 uint16_t NextionInterface::engineRPM = 999;
@@ -11,6 +11,7 @@ float NextionInterface::lambda = -1;
 char NextionInterface::gear = '?';
 uint16_t NextionInterface::prevmph = -1;  
 uint16_t NextionInterface::currentMessage = 0;
+double NextionInterface::prevLapTime = -1;
 
 bool NextionInterface::startupWaterTemp = false;
 bool NextionInterface::startupWaterPump = false;
@@ -234,6 +235,14 @@ void NextionInterface::setSpeed(int value){
     }
 }
 
+void NextionInterface::setLapTime(double lapTime){
+    if(prevLapTime != lapTime){
+        prevLapTime = lapTime;
+        String instruction = "lapTimeVar.txt=\"" + String(lapTime, 5) + " S " + "\"";
+        sendNextionMessage(instruction);
+    }
+}
+
 /*
 The following switch the pages of the screen, fil in each of them
 The first is given as an example
@@ -254,9 +263,9 @@ void NextionInterface::switchToStartUp() {
 }
 
 void NextionInterface::switchToDriver() {
-    if(current_page != page::DIAGNOSTICS){
-        sendNextionMessage("page DIAGNOSTICS");
-        current_page = page::DIAGNOSTICS;
+    if(current_page != page::DRIVER){
+        sendNextionMessage("page DRIVER");
+        current_page = page::DRIVER;
     }
 }
 
