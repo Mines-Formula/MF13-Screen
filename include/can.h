@@ -45,6 +45,10 @@ public:
 
     static double lapTimeEnd;
 
+    static float brakeTempFL;
+    static float brakeTempFR;
+    static float brakeTempRL;
+    static float brakeTempRR;
     
     
 

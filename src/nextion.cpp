@@ -12,6 +12,7 @@ char NextionInterface::gear = '?';
 uint16_t NextionInterface::prevmph = -1;  
 uint16_t NextionInterface::currentMessage = 0;
 double NextionInterface::prevLapTime = -1;
+uint8_t NextionInterface::brakeTempPrev = 0;
 
 bool NextionInterface::startupWaterTemp = false;
 bool NextionInterface::startupWaterPump = false;
@@ -120,14 +121,16 @@ void NextionInterface::setRPM(uint16_t value) {
     if(!startupRPM){
         engineRPM = value;
         int roundedValue = (value / 100)*100;
+        int engineRPMBar = (roundedValue / 15000) * 100;
 
-        String instruction = "rpmVar.txt=\"" + String(roundedValue, DEC) + "\"";
+        String instruction = "rpmBar.val=\"" + String(engineRPMBar, DEC) + "\"";
         startupRPM = true;
     } else if(value != engineRPM){
         engineRPM = value;
         int roundedValue = (value / 100)*100;
+        int engineRPMBar = (roundedValue / 15000) * 100;
 
-        String instruction = "rpmVar.txt=\"" + String(roundedValue, DEC) + "\"";
+        String instruction = "rpmBar.val=\"" + String(engineRPMBar, DEC) + "\"";
         sendNextionMessage(instruction);
     }   
 
@@ -240,6 +243,17 @@ void NextionInterface::setLapTime(double lapTime){
         prevLapTime = lapTime;
         String instruction = "lapTimeVar.txt=\"" + String(lapTime, 5) + " S " + "\"";
         sendNextionMessage(instruction);
+    }
+}
+
+void NextionInterface::setBrakeTemp(float temp, String name){
+    if(temp != brakeTempPrev){
+        brakeTempPrev = temp;
+        String instruction = "brakeTempVar.txt=\"" + String(ctof(temp), DEC) + " F " + "\"";
+        sendNextionMessage(instruction);
+        String instructionName = "brakeNum.txt=\"" + name + "\"";
+        sendNextionMessage(instructionName);
+
     }
 }
 

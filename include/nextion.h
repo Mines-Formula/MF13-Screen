@@ -1,6 +1,7 @@
 #ifndef NEXTION_H
 #define NEXTION_H
 
+#include <string>
 #include <Arduino.h>
 #include "can.h"
 
@@ -48,6 +49,7 @@ private:
     static uint8_t waterTemp;
     static uint8_t oilTemp;
     static uint16_t oilPressure;
+    static uint8_t brakeTempPrev;
     static float batteryVoltage;
     static uint16_t engineRPM;
     static float lambda;
@@ -94,6 +96,8 @@ public:
     static void setNeutral(bool value);
 
     static void setLapTime(double lapTime);
+
+    static void setBrakeTemp(float temp, String name);
 
     static void switchToLoading();
     static void switchToStartUp();

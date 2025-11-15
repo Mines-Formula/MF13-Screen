@@ -24,6 +24,11 @@ static const double RADIUS_METERS = 10.0;
 double CanInterface::lapTimeSeconds = 0;
 double CanInterface::lapTimeEnd = 0;
 
+float CanInterface::brakeTempFL = 0;
+float CanInterface::brakeTempFR = 0;
+float CanInterface::brakeTempRL = 0;
+float CanInterface::brakeTempRR = 0;
+
 CAN_message_t CanInterface::shift_msg; //Receives message from teensy
 bool CanInterface::canActive = false;
 
@@ -185,7 +190,35 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             longitude = (double)lon_raw * 1e-7;
             
         }
+        case 6:{
+            int32_t brakeTempFLRaw = (msg.buf[0] | (msg.buf[1] << 8));
+            int32_t brakeTempFRRaw = (msg.buf[2] | (msg.buf[3] << 8));
+            brakeTempFL = brakeTempFLRaw * 0.1f;
+            brakeTempFR= brakeTempFRRaw * 0.1f;
+
+
+        }
+        case 7:{
+            int32_t brakeTempRLRaw = (msg.buf[0] | (msg.buf[1] << 8));
+            int32_t brakeTempRRRaw = (msg.buf[2] | (msg.buf[3] << 8));
+            brakeTempRL = brakeTempRLRaw * 0.1f;
+            brakeTempRR = brakeTempRRRaw * 0.1f;
+
+            if(brakeTempFL > brakeTempFR && brakeTempFL > brakeTempRL && brakeTempFL > brakeTempRR){
+                NextionInterface::setBrakeTemp(brakeTempFL, "Front Left");
+            }
+            else if(brakeTempFR > brakeTempFL && brakeTempFR > brakeTempRL && brakeTempFR > brakeTempRR){
+                NextionInterface::setBrakeTemp(brakeTempFR, "Front Right");
+            }
+            else if(brakeTempRL > brakeTempFL && brakeTempRL > brakeTempFR && brakeTempRL > brakeTempRR){
+                NextionInterface::setBrakeTemp(brakeTempRL, "Back Left");
+            }
+            else NextionInterface::setBrakeTemp(brakeTempRR, "Back Right");
+
+
+        }
         // 2047: “Any warnings present” message
+    
         case 2047: 
             if(msg.buf != 0){
                 

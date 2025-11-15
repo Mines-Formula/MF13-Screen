@@ -22,10 +22,10 @@ public:
 
     static Adafruit_NeoPixel pixels;
     // in GRB
-    constexpr static const int LED_COLOR_RED = 0x00FF00;
-    constexpr static const int LED_COLOR_GREEN = 0xFF0000;
-    constexpr static const int LED_COLOR_BLUE = 0x0000FF;
-    constexpr static const int LED_COLOR_YELLOW = 0x7FFF00;
+    constexpr static const int LED_COLOR_RED = 65280;
+    constexpr static const int LED_COLOR_GREEN = 16711680;
+    constexpr static const int LED_COLOR_BLUE = 255;
+    constexpr static const int LED_COLOR_YELLOW = 8388352;
     constexpr static const int LED_COLOR_OFF = 0;
     static ledRPMThreshold *ledRPMThresholds;
     static void begin(uint8_t brightness = 75, bool initSerial = false, uint32_t serialBaud = 9600);
