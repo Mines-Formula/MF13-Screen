@@ -232,39 +232,6 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
     }
 }
-void CanInterface::send_shift(const bool up, const bool down,const bool button3){
-    shift_msg.id = 2032;
-
-    shift_msg.len = 6;
-
-    if(up){
-        shift_msg.buf[0] = 111;
-        shift_msg.buf[1] = 127;
-    } else {
-        shift_msg.buf[0] = 0;
-        shift_msg.buf[1] = 0;
-    }
-    
-    if(down){
-        shift_msg.buf[2] = 95;
-        shift_msg.buf[3] = 127;
-    } else {
-        shift_msg.buf[2] = 0;
-        shift_msg.buf[3] = 0;
-    }
-
-    if(button3){
-        shift_msg.buf[4] = 95;
-        shift_msg.buf[5] = 127;
-    }else{
-        shift_msg.buf[4] = 0;
-        shift_msg.buf[5] = 0;
-    }
-
-
-    
-    Can0.write(shift_msg);
-}
 
 void CanInterface::task(){
     Can0.events();

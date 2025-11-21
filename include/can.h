@@ -21,8 +21,6 @@ public:
 
     static void receive_can_updates(const CAN_message_t &msg);
 
-    static void send_shift(const bool up, const bool down,const bool button3);
-
     static double haversine(double lat1, double lon1, double lat2, double lon2);
 
 
