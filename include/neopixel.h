@@ -28,10 +28,23 @@ public:
     constexpr static const int LED_COLOR_YELLOW = 8388352;
     constexpr static const int LED_COLOR_OFF = 0;
     static ledRPMThreshold *ledRPMThresholds;
+
+    /**
+     * @brief Start REV Lights
+     * 
+     * @param brightness 
+     * @param initSerial 
+     * @param serialBaud 
+     */
     static void begin(uint8_t brightness = 75, bool initSerial = false, uint32_t serialBaud = 9600);
+
+    /**
+     * @brief Update REV Lights
+     * 
+     * @param rpm 
+     */
     static void updateLights(int rpm);
-    static void teardown(); 
-    static void serialBegin();
+    
 };
 
 

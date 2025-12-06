@@ -241,7 +241,7 @@ void NextionInterface::setSpeed(int value){
 void NextionInterface::setLapTime(double lapTime){
     if(prevLapTime != lapTime){
         prevLapTime = lapTime;
-        String instruction = "lapTimeVar.txt=\"" + String(lapTime, 5) + " S " + "\"";
+        String instruction = "lapTimeVar.txt=\"" + String(lapTime, 3) + " S " + "\"";
         sendNextionMessage(instruction);
     }
 }

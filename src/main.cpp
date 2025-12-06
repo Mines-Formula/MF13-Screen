@@ -6,7 +6,7 @@
 // Create an IntervalTimer object
 IntervalTimer timer;
 
-int const button = 43;
+int const button = 6;
 
 void setup() {
   //Inits buttons
@@ -19,17 +19,21 @@ void setup() {
   Serial.println("Nextion interface initialized.");
 
   NextionInterface::switchToDriver();
+  
 
-  while(NextionInterface::getCurrentPage() != page::DIAGNOSTICS){
-    
+  while(NextionInterface::getCurrentPage() != page::DRIVER){
+      Serial.println("NOT BReaking");
   }
   //Start Can
+  Serial.println("NOT BReaking");
   CanInterface::init();
+
+
   //Starts Rev Lights
   RevLights::begin(75, true, 9600);
   //Switches to the driver screen
 
-  timer.begin(lapTimeButton, 100000);
+  timer.begin(lapTimeButton, 1000);
 }
 
 void loop() {
@@ -39,8 +43,11 @@ void loop() {
 }
 
 void lapTimeButton(){
-  if(digitalRead(button) == 1){
+  if(digitalRead(button) == 0){
     CanInterface::lapTime(true);
   }
-  else CanInterface::lapTime(false);
+  else{ 
+
+    CanInterface::lapTime(false);
+  }
 }

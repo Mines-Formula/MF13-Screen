@@ -259,11 +259,14 @@ double CanInterface::haversine(double lat1, double lon1, double lat2, double lon
 
 }
 void CanInterface::lapTime(const bool button){
-    if(button &&(longitude >= 24.5) && (latitude >= 67) && (longitude <=49.5) && (latitude <= 125)){
+    if(button){
+        Serial.println("Lap Started");
         startLongitude = longitude;
         startLatitude = latitude;
         lapStarted = true;
         lapStartTime = millis();
+        Serial.println(longitude);
+
     }
     isInStartZone = haversine(latitude, longitude, startLatitude, startLongitude) < RADIUS_METERS;
     if(lapStarted && !wasInZone && isInStartZone && (millis() - lapStartTime > MIN_LAP_MS) && (startLongitude != 0) && (startLatitude != 0)){
