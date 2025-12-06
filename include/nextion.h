@@ -74,6 +74,14 @@ public:
     short ctof(short celsius);
 
     /**
+     * @brief Convert Kilometer to Miles Per Hour
+     * 
+     * @param kmh 
+     * @return short 
+     */
+    short kmhtomph(short kmh);
+
+    /**
      * @brief Set the Water Temp 
      * 
      * @param value 
