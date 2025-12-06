@@ -153,6 +153,58 @@ void NextionInterface::setGear(int numGear) {
         startupGear = true;
     }
 }
+
+// Set Lambda
+void NextionInterface::setLambda(float value) {
+    if (value != lambda) {
+        lambda = value;
+        Serial.println(lambda);
+        String instruction = "lambda.txt=\"" + String(value, 3) + " LA\"";
+        sendNextionMessage(instruction);
+    }
+}
+
+// Set the Shift to Neutral
+void NextionInterface::setNeutral(bool value) {
+    if(value != neutral){
+        neutral = value;
+        if(value) {
+            sendNextionMessage("gearShiftVar.txt=\"N\"");
+        }
+    }
+}
+
+// Set Speed
+void NextionInterface::setSpeed(int value){
+    if(prevmph != value){
+        prevmph = value;
+        String instruction = "speedVar.txt=\"" + String(value, DEC) + " MPH" + "\"";
+        sendNextionMessage(instruction);
+    }
+}
+
+// Set the Lap Time
+void NextionInterface::setLapTime(double lapTime){
+    if(prevLapTime != lapTime){
+        prevLapTime = lapTime;
+        String instruction = "lapTimeVar.txt=\"" + String(lapTime, 3) + " S" + "\"";
+        sendNextionMessage(instruction);
+    }
+}
+
+// Set the brake temp of the highest brake temp and set the name of the brake temp
+void NextionInterface::setBrakeTemp(float temp, String name){
+    if(temp != brakeTempPrev){
+        brakeTempPrev = temp;
+        String instruction = "brakeTempVar.txt=\"" + String(ctof(temp), DEC) + " F " + "\"";
+        sendNextionMessage(instruction);
+        String instructionName = "brakeNum.txt=\"" + name + "\"";
+        sendNextionMessage(instructionName);
+
+    }
+}
+
+// SET THE IMAGE FLAGS
 void NextionInterface::setButtonImage(String elementName, bool value) {
 
     String instruction = "";
@@ -167,6 +219,7 @@ void NextionInterface::setButtonImage(String elementName, bool value) {
     sendNextionMessage(instruction);
 }
 
+//SET FLAGS
 void NextionInterface::setFuelPumpBool(bool value) {
     setButtonImage("fuelPumpVar", value);
     if(!startupFuelPump){
@@ -207,60 +260,9 @@ void NextionInterface::setMessageBool(bool value) {
     }
 }
 
-void NextionInterface::setLambda(float value) {
-    if (value != lambda) {
-        lambda = value;
-        // to give context, these are values from Powertrain
-        // float max = 1.5;
-        // float high = 1.2;
-        // float low = 0.8;
-        // float min = 0.5;
-        Serial.println(lambda);
-        String instruction = "lambda.txt=\"" + String(value, 3) + " LA\"";
-        sendNextionMessage(instruction);
-    }
-}
 
-void NextionInterface::setNeutral(bool value) {
-    if(value != neutral){
-        neutral = value;
-        if(value) {
-            sendNextionMessage("gearShiftVar.txt=\"N\"");
-        }
-    }
-}
 
-void NextionInterface::setSpeed(int value){
-    if(prevmph != value){
-        prevmph = value;
-        String instruction = "speedVar.txt=\"" + String(value, DEC) + " MPH" + "\"";
-        sendNextionMessage(instruction);
-    }
-}
-
-void NextionInterface::setLapTime(double lapTime){
-    if(prevLapTime != lapTime){
-        prevLapTime = lapTime;
-        String instruction = "lapTimeVar.txt=\"" + String(lapTime, 3) + " S " + "\"";
-        sendNextionMessage(instruction);
-    }
-}
-
-void NextionInterface::setBrakeTemp(float temp, String name){
-    if(temp != brakeTempPrev){
-        brakeTempPrev = temp;
-        String instruction = "brakeTempVar.txt=\"" + String(ctof(temp), DEC) + " F " + "\"";
-        sendNextionMessage(instruction);
-        String instructionName = "brakeNum.txt=\"" + name + "\"";
-        sendNextionMessage(instructionName);
-
-    }
-}
-
-/*
-The following switch the pages of the screen, fil in each of them
-The first is given as an example
-*/
+// SCREEN PAGE FUNCTIONS
 
 void NextionInterface::switchToLoading() {
     if(current_page != page::LOADING){
