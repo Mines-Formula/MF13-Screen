@@ -64,6 +64,15 @@ public:
      * 
      */
     static void init();
+
+    /**
+     * @brief Convert Celsius to Farenheight
+     * 
+     * @param celsius 
+     * @return short farenheight
+     */
+    short ctof(short celsius);
+
     /**
      * @brief Set the Water Temp 
      * 
