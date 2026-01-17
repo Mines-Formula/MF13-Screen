@@ -71,7 +71,7 @@ public:
      * @param celsius 
      * @return short farenheight
      */
-    short ctof(short celsius);
+
 
     /**
      * @brief Convert Kilometer to Miles Per Hour
@@ -79,7 +79,7 @@ public:
      * @param kmh 
      * @return short 
      */
-    short kmhtomph(short kmh);
+
 
     /**
      * @brief Set the Water Temp 
@@ -222,6 +222,13 @@ public:
      * @param lapTime 
      */
     static void setLapTime(double lapTime);
+    
+    /**
+     * @brief Set the Delta
+     * 
+     * @param delta 
+     */
+    static void setDelta(double delta);
 
     /**
      * @brief Set the Brake Temp object
@@ -259,7 +266,7 @@ public:
      * @brief Switch Screen to Warning
      * 
      */
-    static void switchToWarning();
+    static void switchToWarning(String WARNING);
 
     /**
      * @brief Get the Current Page

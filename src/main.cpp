@@ -43,11 +43,14 @@ void loop() {
 }
 
 void lapTimeButton(){
-  if(digitalRead(button) == 0){
+  
+    if(digitalRead(button) == 0){
+    
     CanInterface::lapTime(true);
-  }
-  else{ 
-
-    CanInterface::lapTime(false);
-  }
+    }
+    else{
+      CanInterface::lapTime(false);
+    }
+    
+  
 }

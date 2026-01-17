@@ -188,11 +188,20 @@ void NextionInterface::setSpeed(int value){
 void NextionInterface::setLapTime(double lapTime){
     if(prevLapTime != lapTime){
         prevLapTime = lapTime;
-        String instruction = "lapTimeVar.txt=\"" + String(lapTime, 3) + " S" + "\"";
+        String instruction = "lapTimeVar.txt=\"" + String(lapTime, 2) + " S" + "\"";
         sendNextionMessage(instruction);
     }
 }
 
+void NextionInterface::setDelta(double delta){
+    String instruction;
+    if(delta > 0){
+        instruction = "deltaVar.txt=\"" + String("+") + String(delta, 2) + "\"";
+    } else if(delta < 0){
+        instruction = "deltaVar.txt=\""  + String(delta) + "\"";
+    }
+    sendNextionMessage(instruction);
+}
 // Set the brake temp of the highest brake temp and set the name of the brake temp
 void NextionInterface::setBrakeTemp(float temp, String name){
     if(temp != brakeTempPrev){
@@ -290,9 +299,10 @@ void NextionInterface::switchToYippee() {
     
 }
 
-void NextionInterface::switchToWarning() {
+void NextionInterface::switchToWarning(const String WARNING) {
     if(current_page != page::WARNING){
         sendNextionMessage("page WARNING");
+        String instructionName = String("warningLabel.txt=\"") + WARNING + "\"";
         current_page = page::WARNING;
     }
 }

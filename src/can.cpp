@@ -3,6 +3,7 @@
 #include "nextion.h"
 #include "neopixel.h"
 #include <cmath>
+#include<chrono>
 
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> CanInterface::Can0; //Declare Object CanInterface
 
@@ -23,11 +24,15 @@ static const double MIN_LAP_MS = 10000.0;
 static const double RADIUS_METERS = 10.0;
 double CanInterface::lapTimeSeconds = 0;
 double CanInterface::lapTimeEnd = 0;
+uint16_t CanInterface::fastLapTime = 0;
+int16_t CanInterface::delta = 0;
+bool firstLap = false;
 
 float CanInterface::brakeTempFL = 0;
 float CanInterface::brakeTempFR = 0;
 float CanInterface::brakeTempRL = 0;
 float CanInterface::brakeTempRR = 0;
+bool CanInterface::lapstart = false;
 
 CAN_message_t CanInterface::shift_msg; //Receives message from teensy
 bool CanInterface::canActive = false;
@@ -98,9 +103,16 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             bool oilPressureWarning = msg.buf[5] & oilPressureMask;
             bool fuelPressureWarning = msg.buf[5] & fuelPressureMask;            
 
-            if (coolantTempWarning || oilTempWarning || oilPressureWarning || fuelPressureWarning) {
-                NextionInterface::switchToWarning();
-            } else {
+            if (coolantTempWarning ) {
+                NextionInterface::switchToWarning("Coolant Temp Warning");
+            } else if(oilTempWarning){
+                NextionInterface::switchToWarning("Oil Temp Warning");
+            } else if(oilPressureWarning){
+                NextionInterface::switchToWarning("Oil Pressure Warning");
+            } else if(fuelPressureWarning){
+                NextionInterface::switchToWarning("Fuel Pressure Warning");
+            }
+                else {
                 NextionInterface::switchToDriver();
             }
         }
@@ -188,7 +200,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
             latitude  = (double)lat_raw * 1e-7;
             longitude = (double)lon_raw * 1e-7;
-            
+
         }
         case 6:{
             int32_t brakeTempFLRaw = (msg.buf[0] | (msg.buf[1] << 8));
@@ -266,19 +278,33 @@ void CanInterface::lapTime(const bool button){
         lapStarted = true;
         lapStartTime = millis();
         Serial.println(longitude);
-
+        lapstart = true;
     }
-    isInStartZone = haversine(latitude, longitude, startLatitude, startLongitude) < RADIUS_METERS;
+    double distance = haversine(latitude, longitude, startLatitude, startLongitude) * 1000;
+    Serial.println("Distance: " + String(distance));
+    isInStartZone = (haversine(latitude, longitude, startLatitude, startLongitude) * 1000)< RADIUS_METERS;
     if(lapStarted && !wasInZone && isInStartZone && (millis() - lapStartTime > MIN_LAP_MS) && (startLongitude != 0) && (startLatitude != 0)){
+        if(fastLapTime < lapTimeSeconds){
+            fastLapTime = lapTimeSeconds;
+        }
         lapTimeEnd = millis();
-        lapTimeSeconds = 0;
+        if(fastLapTime != 0 && firstLap){
+            delta = fastLapTime - lapTimeSeconds;
+        }else if(firstLap == false){
+            firstLap = true;
+            delta = lapTimeSeconds;
+        }
+        NextionInterface::setDelta(delta);
         lapStartTime = lapTimeEnd;
         NextionInterface::setLapTime(0.0);
+        lapTimeSeconds = 0;
+        
     }
     else if ((startLongitude != 0) && (startLatitude != 0)){
-        lapTimeSeconds = (millis() / 1000.0);
+        lapTimeSeconds = ((millis() - lapStartTime) / 1000.0);
         lapTimeSeconds = std::round(lapTimeSeconds * 100.f) / 100.f;
         NextionInterface::setLapTime(lapTimeSeconds); 
+        
     }
     wasInZone = isInStartZone;
 
