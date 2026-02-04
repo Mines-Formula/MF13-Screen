@@ -59,6 +59,8 @@ public:
      */
     static void task();
 
+     static void send_shift(const bool up, const bool down,const bool button3);
+
     static double longitude;
     static double latitude;
     static double startLongitude;

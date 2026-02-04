@@ -4,6 +4,7 @@
 #include "neopixel.h"
 #include <cmath>
 #include<chrono>
+#include <cstdint>
 
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> CanInterface::Can0; //Declare Object CanInterface
 
@@ -44,6 +45,13 @@ bool CanInterface::init(){ // Init Can Interface Probaly dont change lol
     Can0.begin();
     Can0.setBaudRate(1000000); //needs to be million to talk with CAN
     Can0.setMaxMB(16);
+
+    Can0.setMBFilter(REJECT_ALL);  
+
+    // Can0.setMBFilter(MB0, 0x640, 0x7F0);
+    // Can0.setMBFilter(MB0,1600);
+    Can0.setMBFilter(MB1,1613);
+
     Can0.enableFIFO();
     Can0.enableFIFOInterrupt();
     Can0.onReceive(receive_can_updates);
@@ -72,59 +80,67 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
     switch (msg.id) {
         // 1600: RPM
+
+         case 1613: {
+            Serial.print(millis() );
+            Serial.print(" ");
+            Serial.println(msg.buf[6] & 15);
+            NextionInterface::setGear(msg.buf[6] & 15);
+
+            break;
+        }
+
         case 1600: {
             uint16_t rpm = (msg.buf[1] | (msg.buf[0] << 8));
+            // Serial.println(rpm);
+           
             //uint16_t speed = (msg.buf[2]);
             NextionInterface::setRPM(rpm);
+            NextionInterface::setBrakeTemp(rpm,"");
             // NextionInterface::setSpeed(speed);
             RevLights::updateLights(rpm);
-        }
             break;
-        
+        }
+
+        // 1613: Gear
 
         // 1609: Temps & Voltage
         case 1609: {
             NextionInterface::setWaterTemp(msg.buf[0] - 40);
             NextionInterface::setOilTemp(msg.buf[1] - 40);
             NextionInterface::setVoltage(msg.buf[5] * 0.1f);
-        }
             break;
+        }
+           
         
 
         // 1612: Warning flags
         case 1612: {
             // Bit masks (byte 5)
-            constexpr uint8_t coolantMask     = 0b10000000; // bit 0
-            constexpr uint8_t oilTempMask     = 0b00010000; // bit 3
-            constexpr uint8_t oilPressureMask = 0b00001000; // bit 4
-            constexpr uint8_t fuelPressureMask= 0b00000001; // bit 6
-            bool coolantTempWarning = msg.buf[5] & coolantMask;
-            bool oilTempWarning = msg.buf[5] & oilTempMask;
-            bool oilPressureWarning = msg.buf[5] & oilPressureMask;
-            bool fuelPressureWarning = msg.buf[5] & fuelPressureMask;            
+            // constexpr uint8_t coolantMask     = 0b10000000; // bit 0
+            // constexpr uint8_t oilTempMask     = 0b00010000; // bit 3
+            // constexpr uint8_t oilPressureMask = 0b00001000; // bit 4
+            // constexpr uint8_t fuelPressureMask= 0b00000001; // bit 6
+            // bool coolantTempWarning = msg.buf[5] & coolantMask;
+            // bool oilTempWarning = msg.buf[5] & oilTempMask;
+            // bool oilPressureWarning = msg.buf[5] & oilPressureMask;
+            // bool fuelPressureWarning = msg.buf[5] & fuelPressureMask;            
 
-            if (coolantTempWarning ) {
-                NextionInterface::switchToWarning("Coolant Temp Warning");
-            } else if(oilTempWarning){
-                NextionInterface::switchToWarning("Oil Temp Warning");
-            } else if(oilPressureWarning){
-                NextionInterface::switchToWarning("Oil Pressure Warning");
-            } else if(fuelPressureWarning){
-                NextionInterface::switchToWarning("Fuel Pressure Warning");
-            }
-                else {
-                NextionInterface::switchToDriver();
-            }
-        }
+            // if (coolantTempWarning ) {
+            //     NextionInterface::switchToWarning("Coolant Temp Warning");
+            // } else if(oilTempWarning){
+            //     NextionInterface::switchToWarning("Oil Temp Warning");
+            // } else if(oilPressureWarning){
+            //     NextionInterface::switchToWarning("Oil Pressure Warning");
+            // } else if(fuelPressureWarning){
+            //     NextionInterface::switchToWarning("Fuel Pressure Warning");
+            // }
+            //     else {
+            //     NextionInterface::switchToDriver();
+            // }
             break;
-        
-
-        // 1613: Gear
-        case 1613: {
-            NextionInterface::setGear(msg.buf[6] & 15);
         }
-            break;
-        
+          
 
         // 1284: WaterPump, FuelPump, Fan (fill in as needed)
         case 1284: {
@@ -149,8 +165,8 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
                 else
                     Serial.println("Fan Error");
             }
+             break;
         }
-            break;
         
   // keep break inside the case block
         // 1604: Oil Pressure
@@ -158,8 +174,8 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             // OilPressure is carried in bytes 6..7; header expects two uint8_t args
             NextionInterface::setOilPressure(msg.buf[6], msg.buf[7]);
             // TODO: machine light indicator (MLI)
+             break;
         }
-            break;
         
 
         // 1617: Lambda
@@ -169,72 +185,75 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
         
         case 1608: {
-            int wheelSpeedFL = ((((static_cast<uint16_t>(msg.buf[0])) | (static_cast<uint16_t>(msg.buf[1]) << 8))*0.0277777777778)*15)*0.00094697;
-            int wheelSpeedFR =  ((((static_cast<uint16_t>(msg.buf[2])) | (static_cast<uint16_t>(msg.buf[3]) << 8))*0.0277777777778)*15)*0.00094697;
-            int speed = (wheelSpeedFL+wheelSpeedFR)/2; // gets the average between two wheels
+            // int wheelSpeedFL = ((((static_cast<uint16_t>(msg.buf[0])) | (static_cast<uint16_t>(msg.buf[1]) << 8))*0.0277777777778)*15)*0.00094697;
+            // int wheelSpeedFR =  ((((static_cast<uint16_t>(msg.buf[2])) | (static_cast<uint16_t>(msg.buf[3]) << 8))*0.0277777777778)*15)*0.00094697;
+            // int speed = (wheelSpeedFL+wheelSpeedFR)/2; // gets the average between two wheels
         
 
-            // Serial.print(msg.buf[3]);
-            // Serial.print("  ");
-            // Serial.println(msg.buf[2]);
-            NextionInterface::setSpeed(speed);
+            // // Serial.print(msg.buf[3]);
+            // // Serial.print("  ");
+            // // Serial.println(msg.buf[2]);
+            // NextionInterface::setSpeed(speed);
+              break;
         }
 
-            break;
 
         
         // Longitude and Latitude
         case 1664:{
 
-            int32_t lat_raw =
-            ((int32_t)msg.buf[0] << 24) |
-            ((int32_t)msg.buf[1] << 16) |
-            ((int32_t)msg.buf[2] << 8)  |
-            (int32_t)msg.buf[3];
+            // int32_t lat_raw =
+            // ((int32_t)msg.buf[0] << 24) |
+            // ((int32_t)msg.buf[1] << 16) |
+            // ((int32_t)msg.buf[2] << 8)  |
+            // (int32_t)msg.buf[3];
 
-            int32_t lon_raw =
-            ((int32_t)msg.buf[4] << 24) |
-            ((int32_t)msg.buf[5] << 16) |
-            ((int32_t)msg.buf[6] << 8)  |
-            (int32_t)msg.buf[7];
+            // int32_t lon_raw =
+            // ((int32_t)msg.buf[4] << 24) |
+            // ((int32_t)msg.buf[5] << 16) |
+            // ((int32_t)msg.buf[6] << 8)  |
+            // (int32_t)msg.buf[7];
 
-            latitude  = (double)lat_raw * 1e-7;
-            longitude = (double)lon_raw * 1e-7;
+            // latitude  = (double)lat_raw * 1e-7;
+            // longitude = (double)lon_raw * 1e-7;
+            break;
 
         }
         case 6:{
-            int32_t brakeTempFLRaw = (msg.buf[0] | (msg.buf[1] << 8));
-            int32_t brakeTempFRRaw = (msg.buf[2] | (msg.buf[3] << 8));
-            brakeTempFL = brakeTempFLRaw * 0.1f;
-            brakeTempFR= brakeTempFRRaw * 0.1f;
+            // int32_t brakeTempFLRaw = (msg.buf[0] | (msg.buf[1] << 8));
+            // int32_t brakeTempFRRaw = (msg.buf[2] | (msg.buf[3] << 8));
+            // brakeTempFL = brakeTempFLRaw * 0.1f;
+            // brakeTempFR= brakeTempFRRaw * 0.1f;
+            break;
 
 
         }
         case 7:{
-            int32_t brakeTempRLRaw = (msg.buf[0] | (msg.buf[1] << 8));
-            int32_t brakeTempRRRaw = (msg.buf[2] | (msg.buf[3] << 8));
-            brakeTempRL = brakeTempRLRaw * 0.1f;
-            brakeTempRR = brakeTempRRRaw * 0.1f;
+            // int32_t brakeTempRLRaw = (msg.buf[0] | (msg.buf[1] << 8));
+            // int32_t brakeTempRRRaw = (msg.buf[2] | (msg.buf[3] << 8));
+            // brakeTempRL = brakeTempRLRaw * 0.1f;
+            // brakeTempRR = brakeTempRRRaw * 0.1f;
 
-            if(brakeTempFL > brakeTempFR && brakeTempFL > brakeTempRL && brakeTempFL > brakeTempRR){
-                NextionInterface::setBrakeTemp(brakeTempFL, "Front Left");
-            }
-            else if(brakeTempFR > brakeTempFL && brakeTempFR > brakeTempRL && brakeTempFR > brakeTempRR){
-                NextionInterface::setBrakeTemp(brakeTempFR, "Front Right");
-            }
-            else if(brakeTempRL > brakeTempFL && brakeTempRL > brakeTempFR && brakeTempRL > brakeTempRR){
-                NextionInterface::setBrakeTemp(brakeTempRL, "Back Left");
-            }
-            else NextionInterface::setBrakeTemp(brakeTempRR, "Back Right");
-
+            // if(brakeTempFL > brakeTempFR && brakeTempFL > brakeTempRL && brakeTempFL > brakeTempRR){
+            //     NextionInterface::setBrakeTemp(brakeTempFL, "Front Left");
+            // }
+            // else if(brakeTempFR > brakeTempFL && brakeTempFR > brakeTempRL && brakeTempFR > brakeTempRR){
+            //     NextionInterface::setBrakeTemp(brakeTempFR, "Front Right");
+            // }
+            // else if(brakeTempRL > brakeTempFL && brakeTempRL > brakeTempFR && brakeTempRL > brakeTempRR){
+            //     NextionInterface::setBrakeTemp(brakeTempRL, "Back Left");
+            // }
+            // else NextionInterface::setBrakeTemp(brakeTempRR, "Back Right");
+            break;
 
         }
         // 2047: “Any warnings present” message
     
         case 2047: 
-            if(msg.buf != 0){
+            // if(msg.buf != 0){
                 
-            }
+            // }
+            break;
         
 
 
@@ -281,7 +300,7 @@ void CanInterface::lapTime(const bool button){
         lapstart = true;
     }
     double distance = haversine(latitude, longitude, startLatitude, startLongitude) * 1000;
-    Serial.println("Distance: " + String(distance));
+    // Serial.println("Distance: " + String(distance));
     isInStartZone = (haversine(latitude, longitude, startLatitude, startLongitude) * 1000)< RADIUS_METERS;
     if(lapStarted && !wasInZone && isInStartZone && (millis() - lapStartTime > MIN_LAP_MS) && (startLongitude != 0) && (startLatitude != 0)){
         if(fastLapTime < lapTimeSeconds){
@@ -309,4 +328,39 @@ void CanInterface::lapTime(const bool button){
     wasInZone = isInStartZone;
 
 
+}
+
+
+void CanInterface::send_shift(const bool up, const bool down,const bool button3){
+    shift_msg.id = 2033;
+
+    shift_msg.len = 6;
+
+    if(up){
+        shift_msg.buf[0] = 0x6F;
+        shift_msg.buf[1] = 0x7F;
+    } else {
+        shift_msg.buf[0] = 0;
+        shift_msg.buf[1] = 0;
+    }
+    
+    if(down){
+        shift_msg.buf[2] = 0x5F;
+        shift_msg.buf[3] = 0x7F;
+    } else {
+        shift_msg.buf[2] = 0;
+        shift_msg.buf[3] = 0;
+    }
+
+    if(button3){
+        shift_msg.buf[4] = 0x5F;
+        shift_msg.buf[5] = 0x7F;
+    }else{
+        shift_msg.buf[4] = 0;
+        shift_msg.buf[5] = 0;
+    }
+
+
+    
+    Can0.write(shift_msg);
 }

@@ -89,11 +89,12 @@ void NextionInterface::setOilTemp(uint8_t value) {
 //Set Oil Pressure and send string
 void NextionInterface::setOilPressure(uint8_t value, uint8_t value2) {
     uint16_t newOilPressure = (((static_cast<uint16_t>(value2)) | (static_cast<uint16_t>(value) << 8)) * 0.0145);
+    // Serial.println(newOilPressure);
     // get one decimal of precision
     if(oilPressure != newOilPressure){
-        Serial.printf("value: 0x%X 0x%X\n", value, value2);
+        // Serial.printf("value: 0x%X 0x%X\n", value, value2);
         oilPressure = newOilPressure;
-        String instruction = "oilpPressureVar.txt=\"" + static_cast<String>(oilPressure) + " PSI\"";
+        String instruction = "oilPressureVar.txt=\"" + static_cast<String>(oilPressure) + " PSI\"";
         sendNextionMessage(instruction);
     }
 }
@@ -138,21 +139,21 @@ void NextionInterface::setRPM(uint16_t value) {
 }
 //Set Gear level  can remove and fix nextion screen
 void NextionInterface::setGear(int numGear) {
-    char newGear;
+    // char newGear;
     if (numGear == 0){
-        newGear = 'N';
-    }else{
-        newGear = '0' + (numGear);
-    }
-
-
-    if (newGear != gear || !startupGear) {
-        gear = newGear;
-        Serial.println(gear);
-        String instruction = "gearShiftVar.txt=\"" + String(gear) + '\"';
+        String instruction = "gearShiftVar.txt=\"" + String('N') + '\"';
         sendNextionMessage(instruction);
-        startupGear = true;
+    }else{
+       String instruction = "gearShiftVar.txt=\"" + String(numGear) + '\"';
+        sendNextionMessage(instruction);
     }
+
+
+   
+        // gear = newGear;
+        // Serial.println(gear);
+       
+        // startupGear = true;
 }
 
 // Set Lambda
@@ -206,7 +207,7 @@ void NextionInterface::setDelta(double delta){
 void NextionInterface::setBrakeTemp(float temp, String name){
     if(temp != brakeTempPrev){
         brakeTempPrev = temp;
-        String instruction = "brakeTempVar.txt=\"" + String(ctof(temp), DEC) + " F " + "\"";
+        String instruction = "brakeTempVar.txt=\"" + String((temp)) + " F " + "\"";
         sendNextionMessage(instruction);
         String instructionName = "brakeNum.txt=\"" + name + "\"";
         sendNextionMessage(instructionName);
@@ -300,11 +301,11 @@ void NextionInterface::switchToYippee() {
 }
 
 void NextionInterface::switchToWarning(const String WARNING) {
-    if(current_page != page::WARNING){
-        sendNextionMessage("page WARNING");
-        String instructionName = String("warningLabel.txt=\"") + WARNING + "\"";
-        current_page = page::WARNING;
-    }
+    // if(current_page != page::WARNING){
+    //     sendNextionMessage("page WARNING");
+    //     String instructionName = String("warningLabel.txt=\"") + WARNING + "\"";
+    //     current_page = page::WARNING;
+    // }
 }
 
 
