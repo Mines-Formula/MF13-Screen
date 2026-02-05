@@ -8,7 +8,7 @@ uint16_t NextionInterface::oilPressure = 999;
 float NextionInterface::batteryVoltage = 999;
 uint16_t NextionInterface::engineRPM = 999;
 float NextionInterface::lambda = -1;
-char NextionInterface::gear = '?';
+int8_t NextionInterface::gear = -1;
 uint16_t NextionInterface::prevmph = -1;  
 uint16_t NextionInterface::currentMessage = 0;
 double NextionInterface::prevLapTime = -1;
@@ -139,21 +139,17 @@ void NextionInterface::setRPM(uint16_t value) {
 }
 //Set Gear level  can remove and fix nextion screen
 void NextionInterface::setGear(int numGear) {
-    // char newGear;
-    if (numGear == 0){
-        String instruction = "gearShiftVar.txt=\"" + String('N') + '\"';
-        sendNextionMessage(instruction);
-    }else{
-       String instruction = "gearShiftVar.txt=\"" + String(numGear) + '\"';
-        sendNextionMessage(instruction);
+    if(gear != numGear){
+        gear = numGear;
+
+        if (numGear == 0){
+            String instruction = "gearShiftVar.txt=\"" + String('N') + '\"';
+            sendNextionMessage(instruction);
+        }else{
+            String instruction = "gearShiftVar.txt=\"" + String(numGear) + '\"';
+            sendNextionMessage(instruction);
+        }
     }
-
-
-   
-        // gear = newGear;
-        // Serial.println(gear);
-       
-        // startupGear = true;
 }
 
 // Set Lambda

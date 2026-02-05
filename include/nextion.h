@@ -53,7 +53,7 @@ private:
     static float batteryVoltage;
     static uint16_t engineRPM;
     static float lambda;
-    static char gear;
+    static int8_t gear;
     static uint16_t prevmph;
     static uint16_t currentMessage;
     static double prevLapTime;

@@ -46,11 +46,11 @@ bool CanInterface::init(){ // Init Can Interface Probaly dont change lol
     Can0.setBaudRate(1000000); //needs to be million to talk with CAN
     Can0.setMaxMB(16);
 
-    Can0.setMBFilter(REJECT_ALL);  
+    // Can0.setMBFilter(REJECT_ALL);  
 
-    // Can0.setMBFilter(MB0, 0x640, 0x7F0);
-    // Can0.setMBFilter(MB0,1600);
-    Can0.setMBFilter(MB1,1613);
+    // // Can0.setMBFilter(MB0, 0x640, 0x7F0);
+    // // Can0.setMBFilter(MB0,1600);
+    // Can0.setMBFilter(MB1,1613);
 
     Can0.enableFIFO();
     Can0.enableFIFOInterrupt();
@@ -82,7 +82,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
         // 1600: RPM
 
          case 1613: {
-            Serial.print(millis() );
+            Serial.printf("Gear: %d", millis());
             Serial.print(" ");
             Serial.println(msg.buf[6] & 15);
             NextionInterface::setGear(msg.buf[6] & 15);
@@ -92,6 +92,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
         case 1600: {
             uint16_t rpm = (msg.buf[1] | (msg.buf[0] << 8));
+            Serial.printf("RPM: %d\n", millis());
             // Serial.println(rpm);
            
             //uint16_t speed = (msg.buf[2]);

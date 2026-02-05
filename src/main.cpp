@@ -38,10 +38,10 @@ void setup() {
   
 
   while(NextionInterface::getCurrentPage() != page::DRIVER){
-      Serial.println("NOT BReaking");
+      Serial.println("NOT Breaking");
   }
   //Start Can
-  Serial.println("NOT BReaking");
+  Serial.println("NOT Breaking");
   CanInterface::init();
 
 
