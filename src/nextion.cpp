@@ -162,15 +162,6 @@ void NextionInterface::setLambda(float value) {
     }
 }
 
-// Set the Shift to Neutral
-void NextionInterface::setNeutral(bool value) {
-    if(value != neutral){
-        neutral = value;
-        if(value) {
-            sendNextionMessage("gearShiftVar.txt=\"N\"");
-        }
-    }
-}
 
 // Set Speed
 void NextionInterface::setSpeed(int value){

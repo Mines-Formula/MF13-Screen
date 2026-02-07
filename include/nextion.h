@@ -210,13 +210,6 @@ public:
     static void setLambda(float value);
 
     /**
-     * @brief Set the Neutral
-     * 
-     * @param value 
-     */
-    static void setNeutral(bool value);
-
-    /**
      * @brief Set the Lap Time 
      * 
      * @param lapTime 

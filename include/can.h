@@ -83,6 +83,9 @@ public:
     static float brakeTempRL;
     static float brakeTempRR;
     static bool lapstart;
+
+    static int count;
+    static int lastTime;
     
 
 };

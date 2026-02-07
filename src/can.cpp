@@ -28,6 +28,8 @@ double CanInterface::lapTimeEnd = 0;
 uint16_t CanInterface::fastLapTime = 0;
 int16_t CanInterface::delta = 0;
 bool firstLap = false;
+int CanInterface::count = 0;
+int CanInterface::lastTime = 0;
 
 float CanInterface::brakeTempFL = 0;
 float CanInterface::brakeTempFR = 0;
@@ -78,7 +80,19 @@ void CanInterface::print_can_sniff(const CAN_message_t &msg){
 void CanInterface::receive_can_updates(const CAN_message_t &msg) {
     canActive = true;
 
+    if(millis() - lastTime >= 1000){
+        Serial.print("Msg Amount: ");
+        Serial.println(count);
+        lastTime = millis();
+        count = 0;
+    }
+
+
+    count++;
+    // Serial.println("AHHH");
     switch (msg.id) {
+   
+        
         // 1600: RPM
 
          case 1613: {
@@ -92,13 +106,13 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
         case 1600: {
             uint16_t rpm = (msg.buf[1] | (msg.buf[0] << 8));
-            Serial.printf("RPM: %d\n", millis());
+            // Serial.printf("RPM: %d\n", millis());
             // Serial.println(rpm);
            
             //uint16_t speed = (msg.buf[2]);
             NextionInterface::setRPM(rpm);
-            NextionInterface::setBrakeTemp(rpm,"");
-            // NextionInterface::setSpeed(speed);
+            // NextionInterface::setBrakeTemp(rpm,"");
+            // // NextionInterface::setSpeed(speed);
             RevLights::updateLights(rpm);
             break;
         }
