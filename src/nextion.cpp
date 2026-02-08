@@ -6,15 +6,13 @@ uint8_t NextionInterface::waterTemp = 231;
 uint8_t NextionInterface::oilTemp = 231;
 uint16_t NextionInterface::oilPressure = 999;
 float NextionInterface::batteryVoltage = 999;
-// uint16_t NextionInterface::engineengineRPMBar = 999;
-uint16_t NextionInterface::displayRpm = 999;
+uint16_t NextionInterface::displayRPM = 999;
 float NextionInterface::lambda = -1;
 int8_t NextionInterface::gear = -1;
 uint16_t NextionInterface::prevmph = -1;  
 uint16_t NextionInterface::currentMessage = 0;
 double NextionInterface::prevLapTime = -1;
 uint8_t NextionInterface::brakeTempPrev = 0;
-
 bool NextionInterface::startupWaterTemp = false;
 bool NextionInterface::startupWaterPump = false;
 bool NextionInterface::startupOilTemp = false;
@@ -120,37 +118,6 @@ void NextionInterface::setDriverMessage(uint16_t value) {
 }
 //Set the RPM on the screen
 void NextionInterface::setRPM(uint16_t value) {
-    // value = kmhtomph(value);
-    // if(!startupRPM){
-    //     engineRPM = value;
-    //     int roundedValue = (value / 100)*100;
-    //     int engineRPMBar = (roundedValue / 15000) * 100;
-
-    //     String instruction = "rpmBar.val=\"" + String(engineRPMBar, DEC) + "\"";
-    //     startupRPM = true;
-    // } else if(value != engineRPM){
-    //     engineRPM = value;
-    //     int roundedValue = (value / 100)*100;
-    //     int engineRPMBar = (roundedValue / 15000) * 100;
-
-    //     String instruction = "rpmBar.val=\"" + String(engineRPMBar, DEC) + "\"";
-    //     sendNextionMessage(instruction);
-    // } 
-
-    //     if(!startupOilTemp){
-    //     oilTemp = value;
-
-    //     String instruction = "oilTempVar.txt=\"" + String(ctof(value), DEC) + " " + char(176) + "F\"";
-    //     sendNextionMessage(instruction);
-    //     startupOilTemp = true;
-
-    // } else if(value != oilTemp){
-    //     oilTemp = value;
-
-    //     String instruction = "oilTempVar.txt=\"" + String(ctof(value), DEC) + " " + char(176) + "F\"";
-    //     sendNextionMessage(instruction);
-    // }
-
     value = kmhtomph(value);
     if(!startupRPM){
         engineRPM = value;

@@ -93,7 +93,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
     switch (msg.id) {
    
         
-        // 1600: RPM
+        // 1600: rpm
 
          case 1613: {
             Serial.printf("Gear: %d", millis());
