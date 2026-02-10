@@ -250,6 +250,8 @@ public:
      */
     static void switchToDriver();
 
+    static void switchToDiagnostic();
+
     /**
      * @brief Switch to Yippee DO NOT USE FOR FUN
      * 
