@@ -34,13 +34,12 @@ void setup() {
   NextionInterface::init(); // Creates Serial Port to Display
   Serial.println("Nextion interface initialized.");
 
-  // NextionInterface::switchToDriver();
-  NextionInterface::switchToDiagnostic();
+  NextionInterface::switchToDriver();
   
 
-  // while(NextionInterface::getCurrentPage() != page::DRIVER){
-  //     // Serial.println("NOT Breaking");
-  // }
+  while(NextionInterface::getCurrentPage() != page::DRIVER){
+      Serial.println("NOT Breaking");
+  }
   //Start Can
   Serial.println("NOT Breaking");
   CanInterface::init();

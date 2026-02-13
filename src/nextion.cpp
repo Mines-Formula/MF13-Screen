@@ -294,13 +294,6 @@ void NextionInterface::switchToWarning(const String WARNING) {
     // }
 }
 
-void NextionInterface::switchToDiagnostic(){
-      if(current_page != page::DIAGNOSTICS){
-        sendNextionMessage("page DIAGNOSTICS");
-        current_page = page::DIAGNOSTICS;
-    }
-}
-
 
 page NextionInterface::getCurrentPage() {
     return current_page;
