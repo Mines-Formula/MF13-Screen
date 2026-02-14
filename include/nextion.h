@@ -52,7 +52,7 @@ private:
     static uint8_t brakeTempPrev;
     static float batteryVoltage;
     static uint16_t engineRPM;
-    static unit16_t rpm;
+    static uint16_t displayRPM;
     static float lambda;
     static int8_t gear;
     static uint16_t prevmph;
