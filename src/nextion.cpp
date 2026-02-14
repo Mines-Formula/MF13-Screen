@@ -2,6 +2,7 @@
 //Inits Nextion as Loading Screen
 page NextionInterface::current_page = page::LOADING;
 //Sets initial value
+uint16_t NextionInterface::engineRPM = 999;
 uint8_t NextionInterface::waterTemp = 231;
 uint8_t NextionInterface::oilTemp = 231;
 uint16_t NextionInterface::oilPressure = 999;
@@ -122,16 +123,16 @@ void NextionInterface::setRPM(uint16_t value) {
     if(!startupRPM){
         engineRPM = value;
         int roundedValue = (value / 100)*100;
-        int displayRPM = (roundedValue / 15000) * 100;
+        int displayedRPM = (roundedValue / 15000) * 100;
 
-        String instruction = "displayRPM.txt=\"" + String(displayRPM, DEC) + "\"";
+        String instruction = "displayRPM.txt=\"" + String(displayedRPM, DEC) + "\"";
         displayRPM = true;
     } else if(value != engineRPM){
         engineRPM = value;
         int roundedValue = (value / 100)*100;
-        int displayRPM = (roundedValue / 15000) * 100;
+        int displayedRPM = (roundedValue / 15000) * 100;
 
-        String instruction = "displayRPM.txt=\"" + String(displayRPM, DEC) + "\"";
+        String instruction = "displayRPM.txt=\"" + String(displayedRPM, DEC) + "\"";
         sendNextionMessage(instruction);
     }    
 
