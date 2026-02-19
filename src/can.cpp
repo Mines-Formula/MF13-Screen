@@ -93,37 +93,37 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
     switch (msg.id) {
    
         
-        // 1600: rpm
+     
 
+         // 1613: Gear
          case 1613: {
-            Serial.printf("Gear: %d", millis());
-            Serial.print(" ");
-            Serial.println(msg.buf[6] & 15);
+            // Serial.printf("Gear: %d", millis());
+            // Serial.print(" ");
+            // Serial.println(msg.buf[6] & 15);
             NextionInterface::setGear(msg.buf[6] & 15);
 
             break;
         }
 
+           // 1600: rpm
         case 1600: {
             uint16_t rpm = (msg.buf[1] | (msg.buf[0] << 8));
-            // Serial.printf("RPM: %d\n", millis());
-            // Serial.println(rpm);
-           
-            //uint16_t speed = (msg.buf[2]);
             NextionInterface::setRPM(rpm);
-            // NextionInterface::setBrakeTemp(rpm,"");
-            // // NextionInterface::setSpeed(speed);
             RevLights::updateLights(rpm);
+
+            //uint16_t speed = (msg.buf[2]);
+            // // NextionInterface::setSpeed(speed);
             break;
         }
 
-        // 1613: Gear
+       
 
         // 1609: Temps & Voltage
         case 1609: {
+            // Problem Area
             NextionInterface::setWaterTemp(msg.buf[0] - 40);
             NextionInterface::setOilTemp(msg.buf[1] - 40);
-            NextionInterface::setVoltage(msg.buf[5] * 0.1f);
+            // NextionInterface::setVoltage(msg.buf[5] * 0.1f);
             break;
         }
            
@@ -158,28 +158,30 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
           
 
         // 1284: WaterPump, FuelPump, Fan (fill in as needed)
+         //Makes it slow
         case 1284: {
-            if(msg.buf[0] == 0 || msg.buf[0] == 1){
-                if(msg.buf[1] == 0 || msg.buf[1] == 1){
-                    NextionInterface::setWaterPumpBool(msg.buf[1]);
-                } 
-                else
-                    Serial.println("Water Pump Error");
 
-                if(msg.buf[0] == 0 || msg.buf[0] == 1){
-                    //NextionInterface::setFuelPumpValue(msg.buf[0]);
-                    NextionInterface::setFuelPumpBool(msg.buf[0]);
-                }   
-                else
-                    Serial.println("Fuel Pump Error");
+            // if(msg.buf[0] == 0 || msg.buf[0] == 1){
+            //     if(msg.buf[1] == 0 || msg.buf[1] == 1){
+            //         NextionInterface::setWaterPumpBool(msg.buf[1]);
+            //     } 
+            //     else
+            //         Serial.println("Water Pump Error");
 
-                if(msg.buf[3] == 0 || msg.buf[3] == 1){
+            //     if(msg.buf[0] == 0 || msg.buf[0] == 1){
+            //         //NextionInterface::setFuelPumpValue(msg.buf[0]);
+            //         NextionInterface::setFuelPumpBool(msg.buf[0]);
+            //     }   
+            //     else
+            //         Serial.println("Fuel Pump Error");
 
-                    NextionInterface::setFanBool(msg.buf[3]);
-                }
-                else
-                    Serial.println("Fan Error");
-            }
+            //     if(msg.buf[3] == 0 || msg.buf[3] == 1){
+
+            //         NextionInterface::setFanBool(msg.buf[3]);
+            //     }
+            //     else
+            //         Serial.println("Fan Error");
+            // }
              break;
         }
         
@@ -187,6 +189,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
         // 1604: Oil Pressure
         case 1604: {
             // OilPressure is carried in bytes 6..7; header expects two uint8_t args
+            //Look here for potential issue
             NextionInterface::setOilPressure(msg.buf[6], msg.buf[7]);
             // TODO: machine light indicator (MLI)
              break;
@@ -195,6 +198,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
         // 1617: Lambda
         case 1617: 
+            //Look here
             NextionInterface::setLambda(msg.buf[0]);
             break;
 

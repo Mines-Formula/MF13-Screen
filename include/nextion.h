@@ -263,6 +263,10 @@ public:
     static void switchToWarning(String WARNING);
 
     /**
+     *@brief Switch Screen to Diagnostic  */ 
+    static void switchToDiagnostic();
+
+    /**
      * @brief Get the Current Page
      * 
      * @return page 
