@@ -3,11 +3,10 @@
 page NextionInterface::current_page = page::LOADING;
 //Sets initial value
 uint16_t NextionInterface::engineRPM = 999;
-uint8_t NextionInterface::waterTemp = 231;
-uint8_t NextionInterface::oilTemp = 231;
+uint8_t NextionInterface::waterTemp = -1;
+uint8_t NextionInterface::oilTemp = -1;
 uint16_t NextionInterface::oilPressure = 999;
 float NextionInterface::batteryVoltage = 999;
-uint16_t NextionInterface::displayRPM = 999;
 float NextionInterface::lambda = -1;
 int8_t NextionInterface::gear = -1;
 uint16_t NextionInterface::prevmph = -1;  
@@ -55,33 +54,21 @@ void NextionInterface::sendNextionMessage(String message) {
 }
 //Sets the Water Temp on Screen
 void NextionInterface::setWaterTemp(int value) {
-    if(!startupWaterTemp){
+    if(value != waterTemp){
         waterTemp = value;
 
-        String instruction = "waterTempVar.txt=\"" + String(ctof(value), DEC) + " " + char(176) + "F\"";
-        sendNextionMessage(instruction);
-        startupWaterTemp = true;
-    } else if(value != waterTemp){
-        waterTemp = value;
-
-        String instruction = "waterTempVar.txt=\"" + String(ctof(value), DEC) + " " + char(176) + "F\"";
+        String instruction = "waterTempVar.txt=\"" + static_cast<String>(ctof(value)) + "F\"";
         sendNextionMessage(instruction);
     }
 
 }
 //Set Oil Temp
 void NextionInterface::setOilTemp(uint8_t value) {
-    if(!startupOilTemp){
+
+    if(value != oilTemp){
         oilTemp = value;
 
-        String instruction = "oilTempVar.txt=\"" + String(ctof(value), DEC) + " " + char(176) + "F\"";
-        sendNextionMessage(instruction);
-        startupOilTemp = true;
-
-    } else if(value != oilTemp){
-        oilTemp = value;
-
-        String instruction = "oilTempVar.txt=\"" + String(ctof(value), DEC) + " " + char(176) + "F\"";
+        String instruction = "oilTempVar.txt=\"" + static_cast<String>(ctof(value))+"F\"";
         sendNextionMessage(instruction);
     }
 
@@ -100,13 +87,12 @@ void NextionInterface::setOilPressure(uint8_t value, uint8_t value2) {
 }
 //Sets voltage for current screen would have to be multiplied by 100
 void NextionInterface::setVoltage(float value) {
-    if (value != batteryVoltage) {
-        batteryVoltage = value;
+    // if (value != batteryVoltage) {
         batteryVoltage = value;
 
         String instruction = "voltageVar.txt=\"" + String(value, DEC) + " V\"";
         sendNextionMessage(instruction);
-    }
+    // }
 }
 //Send a message to the driver
 void NextionInterface::setDriverMessage(uint16_t value) {
@@ -119,27 +105,15 @@ void NextionInterface::setDriverMessage(uint16_t value) {
 }
 //Set the RPM on the screen
 void NextionInterface::setRPM(uint16_t value) {
-    value = kmhtomph(value);
-    if(!startupRPM){
-        engineRPM = value;
-        int roundedValue = (value / 100)*100;
-        int displayedRPM = (roundedValue / 15000) * 100;
+         int roundedValue = (value / 100);
+         roundedValue = roundedValue*100;
 
-        String instruction = "displayRPM.txt=\"" + String(displayedRPM, DEC) + "\"";
-        displayRPM = true;
-    } else if(value != engineRPM){
-        engineRPM = value;
-        int roundedValue = (value / 100)*100;
-        int displayedRPM = (roundedValue / 15000) * 100;
-
-        String instruction = "displayRPM.txt=\"" + String(displayedRPM, DEC) + "\"";
+        String instruction = "rpm.txt=\"" + String(roundedValue, DEC) + "\"";
         sendNextionMessage(instruction);
-    }    
 
 }
-//Set Gear level  can remove and fix nextion screen
+//Set Gear level
 void NextionInterface::setGear(int numGear) {
-    if(gear != numGear){
         gear = numGear;
 
         if (numGear == 0){
@@ -149,14 +123,14 @@ void NextionInterface::setGear(int numGear) {
             String instruction = "gearShiftVar.txt=\"" + String(numGear) + '\"';
             sendNextionMessage(instruction);
         }
-    }
 }
 
 // Set Lambda
 void NextionInterface::setLambda(float value) {
     if (value != lambda) {
         lambda = value;
-        Serial.println(lambda);
+    //     Serial.println(lambda);
+    
         String instruction = "lambda.txt=\"" + String(value, 3) + " LA\"";
         sendNextionMessage(instruction);
     }
@@ -194,7 +168,7 @@ void NextionInterface::setDelta(double delta){
 void NextionInterface::setBrakeTemp(float temp, String name){
     if(temp != brakeTempPrev){
         brakeTempPrev = temp;
-        String instruction = "brakeTempVar.txt=\"" + String((temp)) + " F " + "\"";
+        String instruction = "brakeTempVar.txt=\"" + String(temp) + " F " + "\"";
         sendNextionMessage(instruction);
         String instructionName = "brakeNum.txt=\"" + name + "\"";
         sendNextionMessage(instructionName);
@@ -283,6 +257,13 @@ void NextionInterface::switchToDriver() {
     }
 }
 
+void NextionInterface::switchToDiagnostic(){
+    if(current_page != page::DIAGNOSTICS){
+        sendNextionMessage("page DIAGNOSTICS");
+        current_page = page::DIAGNOSTICS;
+    }
+}
+
 void NextionInterface::switchToYippee() {
     
 }
@@ -293,13 +274,6 @@ void NextionInterface::switchToWarning(const String WARNING) {
     //     String instructionName = String("warningLabel.txt=\"") + WARNING + "\"";
     //     current_page = page::WARNING;
     // }
-}
-
-void NextionInterface::switchToDiagnostic(){
-      if(current_page != page::DIAGNOSTICS){
-        sendNextionMessage("page DIAGNOSTICS");
-        current_page = page::DIAGNOSTICS;
-    }
 }
 
 

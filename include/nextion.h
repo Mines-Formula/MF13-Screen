@@ -250,8 +250,6 @@ public:
      */
     static void switchToDriver();
 
-    static void switchToDiagnostic();
-
     /**
      * @brief Switch to Yippee DO NOT USE FOR FUN
      * 
@@ -263,6 +261,10 @@ public:
      * 
      */
     static void switchToWarning(String WARNING);
+
+    /**
+     *@brief Switch Screen to Diagnostic  */ 
+    static void switchToDiagnostic();
 
     /**
      * @brief Get the Current Page

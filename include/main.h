@@ -9,10 +9,5 @@
 extern CanInterface can;
 extern NextionInterface screen;
 extern RevLights revLights;
-/**
- * @brief Read Laptime
- * 
- */
-void lapTimeButton();
 
 #endif //MAIN_H 
