@@ -27,5 +27,4 @@ void loop() {
   //Updates Can
   // Serial.println("AHH");
   CanInterface::task();
-
 }
