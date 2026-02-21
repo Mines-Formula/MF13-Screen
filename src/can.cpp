@@ -6,8 +6,8 @@
 #include<chrono>
 #include <cstdint>
 
-#define SCREEN_DEBUG
-#include "can_debug.h" // disable if not reading from serial
+#define SCREEN_DEBUG // disable if not reading from serial
+#include "can_debug.h" 
 
 
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> CanInterface::Can0; //Declare Object CanInterface
@@ -323,7 +323,7 @@ void CanInterface::lapTime(const bool button){
         DEBUG_PRINT("\n");
         lapstart = true;
     }
-    double distance = haversine(latitude, longitude, startLatitude, startLongitude) * 1000; //potentially unused
+    // double distance = haversine(latitude, longitude, startLatitude, startLongitude) * 1000; //potentially unused
     // Serial.println("Distance: " + String(distance));
     isInStartZone = (haversine(latitude, longitude, startLatitude, startLongitude) * 1000)< RADIUS_METERS;
     if(lapStarted && !wasInZone && isInStartZone && (millis() - lapStartTime > MIN_LAP_MS) && (startLongitude != 0) && (startLatitude != 0)){
