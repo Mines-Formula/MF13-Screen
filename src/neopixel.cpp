@@ -31,6 +31,8 @@ void RevLights::begin(uint8_t brightness, bool initSerial, uint32_t serialBaud)
         }
         delay(100);
         updateLights(0);
+
+        startupSequence();
 }
 void  RevLights::updateLights(int rpm) //DEV NOTE: If this class is failing, it likely means data types arent being initialized
     {   
@@ -60,8 +62,19 @@ void  RevLights::updateLights(int rpm) //DEV NOTE: If this class is failing, it 
 
     pixels.show();
     }
-
-
-
+void RevLights::startupSequence(){
+    // go through each light, one-by-one turn them blue
+    for(int i=0; i < NUM_PIXELS; ++i) {
+        pixels.setPixelColor(i, LED_COLOR_BLUE);
+        delay(100);
+        pixels.show();
+    }
+    pixels.clear();
+    // reset to blank
+    for(int i=0; i < NUM_PIXELS; ++i) {
+        pixels.setPixelColor(i, LED_COLOR_OFF);
+    }
+    pixels.show();
+}
 
     
