@@ -47,6 +47,10 @@ public:
      */
     void updateLights(int rpm);
     
+    /**
+     * @brief startup light sequence
+     */
+    static void startupSequence();
 };
 
 extern RevLights RevLight;
