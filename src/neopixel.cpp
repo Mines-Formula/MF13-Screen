@@ -1,6 +1,8 @@
 #include "neopixel.h"
 Adafruit_NeoPixel RevLights::pixels(RevLights::NUM_PIXELS, RevLights::LED_PINS, NEO_GRB + NEO_KHZ800);
-RevLights::ledRPMThreshold* RevLights::ledRPMThresholds = nullptr;
+
+RevLights RevLight;
+
 
 void RevLights::begin(uint8_t brightness, bool initSerial, uint32_t serialBaud)
     {
@@ -9,10 +11,10 @@ void RevLights::begin(uint8_t brightness, bool initSerial, uint32_t serialBaud)
             Serial.println("RevLights begin()");
         }
 
-        if(!ledRPMThresholds){
-            ledRPMThresholds = new ledRPMThreshold[NUM_PIXELS];
-        }
-
+        // if(!ledRPMThresholds){
+        //     ledRPMThresholds = new ledRPMThreshold[NUM_PIXELS];
+        // }
+        
         pixels.begin();
         pixels.setBrightness(brightness);
         pixels.clear();
@@ -21,6 +23,7 @@ void RevLights::begin(uint8_t brightness, bool initSerial, uint32_t serialBaud)
             ledRPMThresholds[i].threshold = SHIFT_POINT;
             ledRPMThresholds[i].color = LED_COLOR_BLUE;
         }
+        
         for (int i = 7; i >= 0; i--) {
             ledRPMThresholds[i].threshold = ledRPMThresholds[i+1].threshold - RPM_DIFFERENCE;
             if (i >= 4) {
@@ -32,6 +35,7 @@ void RevLights::begin(uint8_t brightness, bool initSerial, uint32_t serialBaud)
         delay(100);
         updateLights(0);
 }
+
 void  RevLights::updateLights(int rpm) //DEV NOTE: If this class is failing, it likely means data types arent being initialized
     {   
         

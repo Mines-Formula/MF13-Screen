@@ -3,10 +3,10 @@
 #include "nextion.h"
 #include "neopixel.h"
 #include <cmath>
-#include<chrono>
+#include <chrono>
 #include <cstdint>
 
-#define SCREEN_DEBUG // disable if not reading from serial
+// #define SCREEN_DEBUG // disable if not reading from serial 
 #include "can_debug.h" 
 
 
@@ -112,7 +112,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
         case 1600: {
             uint16_t rpm = (msg.buf[1] | (msg.buf[0] << 8));
             NextionInterface::setRPM(rpm);
-            RevLights::updateLights(rpm);
+            RevLight.updateLights(rpm);
 
             //uint16_t speed = (msg.buf[2]);
             // // NextionInterface::setSpeed(speed);
@@ -383,7 +383,6 @@ void CanInterface::send_shift(const bool up, const bool down,const bool button3)
         shift_msg.buf[4] = 0;
         shift_msg.buf[5] = 0;
     }
-
 
     
     Can0.write(shift_msg);
