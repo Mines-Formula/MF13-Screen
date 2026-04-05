@@ -7,6 +7,7 @@ class NextionInterface;
 
 class CanInterface{
 public:
+
     CanInterface();
 
     static bool canActive;
