@@ -17,7 +17,7 @@ public:
     
     // We're making an array of leds that each have an rpm threshold and a color
     struct ledRPMThreshold {
-        int threshold;
+        int threshold = -1;
         uint32_t color;
     };
 

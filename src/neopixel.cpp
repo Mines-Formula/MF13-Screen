@@ -10,6 +10,11 @@ void RevLights::begin(uint8_t brightness, bool initSerial, uint32_t serialBaud)
             Serial.begin(serialBaud);
             Serial.println("RevLights begin()");
         }
+        
+        if (ledRPMThresholds[0].threshold == -1) {
+            // Already initialized
+            return;
+        }
 
         // if(!ledRPMThresholds){
         //     ledRPMThresholds = new ledRPMThreshold[NUM_PIXELS];
