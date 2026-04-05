@@ -11,10 +11,7 @@ void RevLights::begin(uint8_t brightness, bool initSerial, uint32_t serialBaud)
             Serial.println("RevLights begin()");
         }
         
-        if (ledRPMThresholds[0].threshold == -1) {
-            // Already initialized
-            return;
-        }
+        
 
         // if(!ledRPMThresholds){
         //     ledRPMThresholds = new ledRPMThreshold[NUM_PIXELS];
@@ -44,8 +41,12 @@ void RevLights::begin(uint8_t brightness, bool initSerial, uint32_t serialBaud)
 }
 
 void  RevLights::updateLights(int rpm) //DEV NOTE: If this class is failing, it likely means data types arent being initialized
-    {   
-        
+{   
+    // Memory hasnt initialized yet   
+    if (ledRPMThresholds[0].threshold == -1) {
+        return;
+    }
+
     pixels.clear();
 
     if (rpm >= REDLINE) {
