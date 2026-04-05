@@ -56,6 +56,10 @@ public:
      */
     void setLEDThreshold();
     
+    /**
+     * @brief startup light sequence
+     */
+    static void startupSequence();
 };
 
 extern RevLights RevLight;
