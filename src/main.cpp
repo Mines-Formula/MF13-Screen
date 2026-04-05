@@ -13,11 +13,11 @@ void setup() {
   NextionInterface::init(); // Creates Serial Port to Display
   Serial.println("Nextion interface initialized.");
 
+  //Starts Rev Lights
+  RevLight.begin(75, true, 9600);
   
   CanInterface::init();
 
-  //Starts Rev Lights
-  RevLight.begin(75, true, 9600);
   //Switches to the driver screen
   NextionInterface::switchToDriver();
   
