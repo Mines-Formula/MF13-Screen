@@ -93,9 +93,9 @@ void RevLights::updateLights(int rpm, uint8_t numGear) //DEV NOTE: If this class
         pixels.setBrightness(255);
         for (int i = 0; i < NUM_PIXELS; ++i) {
             if(i<2 || i<9){
-            pixels.setPixelColor(i, LED_COLOR_RED);
-            }else{
             pixels.setPixelColor(i, LED_COLOR_BLUE);
+            }else{
+            pixels.setPixelColor(i, LED_COLOR_RED);
             }
 
             //flash blue(full brightness)bring there attetion
