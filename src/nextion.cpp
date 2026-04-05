@@ -103,8 +103,8 @@ void NextionInterface::setDriverMessage(uint16_t value) {
 }
 //Set the RPM on the screen
 void NextionInterface::setRPM(uint16_t value) {
-         int roundedValue = (value / 100);
-         roundedValue = roundedValue*100;
+         int roundedValue = (value / 50);
+         roundedValue = roundedValue*50;
 
         String instruction = "rpm.txt=\"" + String(roundedValue, DEC) + "\"";
         sendNextionMessage(instruction);

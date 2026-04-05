@@ -65,10 +65,7 @@ void RevLights::setLEDThreshold(){
     }
 }
 
-
-void RevLights::updateLights(int rpm, uint8_t numGear) //DEV NOTE: If this class is failing, it likely means data types arent being initialized
-    {      
-
+void RevLights::updateLights(int rpm, uint8_t numGear) { //DEV NOTE: If this class is failing, it likely means data types arent being initialized
     // Memory hasnt initialized yet   
     if (ledRPMThresholds[0].thresholds == nullptr) {
         return;
@@ -88,20 +85,19 @@ void RevLights::updateLights(int rpm, uint8_t numGear) //DEV NOTE: If this class
         for (int i = 0; i < NUM_PIXELS; ++i) {
             pixels.setPixelColor(i, LED_COLOR_GREEN);
         }
-    } 
-    else if(rpm>=RPMShiftPoints[numGear]-150){ //sets all lights to blue at shift point
+    } else if(rpm>=RPMShiftPoints[numGear]-150){ //sets all lights to blue at shift point
+        pixels.clear();
+        pixels.show();
         pixels.setBrightness(255);
         for (int i = 0; i < NUM_PIXELS; ++i) {
-            if(i<2 || i<9){
-            pixels.setPixelColor(i, LED_COLOR_BLUE);
-            }else{
+            if(i<2 || i>9){
             pixels.setPixelColor(i, LED_COLOR_RED);
+            }else{
+            pixels.setPixelColor(i, LED_COLOR_BLUE);
             }
-
-            //flash blue(full brightness)bring there attetion
+            //flash blue(full brightness) bring their attetion
         }
-    }
-     else {
+    } else {
         pixels.setBrightness(75);
         // Fill according to thresholds
         for (int i = 0; i < NUM_PIXELS; ++i) {
