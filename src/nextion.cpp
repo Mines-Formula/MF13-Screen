@@ -38,12 +38,10 @@ void NextionInterface::init() {
 short NextionInterface::ctof(short celsius) {
     return (celsius * 9 / 5) + 32;
 }
-
 // Convertt Kilometer per Hour to Miles per Hour
 short NextionInterface::kmhtomph(short kmh){
     return (kmh /1.6);
 }
-
 //Sends Message to message
 void NextionInterface::sendNextionMessage(String message) {
     // Serial.println(message);

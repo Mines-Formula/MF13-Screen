@@ -37,6 +37,7 @@ float CanInterface::brakeTempFR = 0;
 float CanInterface::brakeTempRL = 0;
 float CanInterface::brakeTempRR = 0;
 bool CanInterface::lapstart = false;
+uint8_t numGear = 0;
 
 CAN_message_t CanInterface::shift_msg; //Receives message from teensy
 bool CanInterface::canActive = false;
@@ -103,7 +104,8 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             // Serial.printf("Gear: %d", millis());
             // Serial.print(" ");
             // Serial.println(msg.buf[6] & 15);
-            NextionInterface::setGear(msg.buf[6] & 15);
+            NextionInterface::setGear(msg.buf[6] & 15); //filter the byte
+            numGear=msg.buf[6] & 15; 
 
             break;
         }
@@ -112,7 +114,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
         case 1600: {
             uint16_t rpm = (msg.buf[1] | (msg.buf[0] << 8));
             NextionInterface::setRPM(rpm);
-            RevLight.updateLights(rpm);
+            RevLight.updateLights(rpm, numGear);
 
             //uint16_t speed = (msg.buf[2]);
             // // NextionInterface::setSpeed(speed);

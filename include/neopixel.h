@@ -17,7 +17,7 @@ public:
     
     // We're making an array of leds that each have an rpm threshold and a color
     struct ledRPMThreshold {
-        int threshold;
+        int thresholds[6];
         uint32_t color;
     };
 
@@ -28,7 +28,9 @@ public:
     constexpr static const int LED_COLOR_BLUE = 255;        // 0x0000FF
     constexpr static const int LED_COLOR_YELLOW = 8388352;
     constexpr static const int LED_COLOR_OFF = 0;
-    ledRPMThreshold ledRPMThresholds[NUM_PIXELS]; //makes a pointer to 
+    ledRPMThreshold ledRPMThresholds[NUM_PIXELS]; //makes a pointer to threshold and color 
+    constexpr static const int RPMShiftPoints[6]={8000,12504,11643,11322,11017,10834};
+    constexpr static const int RPMShiftDownPoints[6]={0,9000,9600,9800,9900,10000};
 
 
     /**
@@ -45,7 +47,14 @@ public:
      * 
      * @param rpm 
      */
-    void updateLights(int rpm);
+    void updateLights(int rpm, uint8_t numGear);
+
+    /**
+     * @brief Set the threasholds for leds in ledRPMThresholds struct for setting the lights on the screen dynamicaly 
+     * 
+     * @param numGear 
+     */
+    void setLEDThreshold();
     
 };
 
