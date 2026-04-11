@@ -60,6 +60,7 @@ public:
      */
     static void task();
     static void canRecieveFailure(); 
+    static void SupeSerialReadingFunction();
 
      static void send_shift(const bool up, const bool down,const bool button3);
 

@@ -295,8 +295,13 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
 void CanInterface::task(){
     Can0.events();
+    SupeSerialReadingFunction();
     canRecieveFailure();
 }
+void CanInterface::SupeSerialReadingFunction(){
+//this is supper cool and will do something at some point
+}
+
 
 void CanInterface::canRecieveFailure(){
     if (millis()- lastCanMessageTimeStamp > 5000){
