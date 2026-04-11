@@ -3,14 +3,15 @@
 #include "nextion.h"
 #include "neopixel.h"
 #include <cmath>
-#include<chrono>
+#include <chrono>
 #include <cstdint>
+
+// #define SCREEN_DEBUG // disable if not reading from serial 
+#include "can_debug.h" 
+
 
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> CanInterface::Can0; //Declare Object CanInterface
 
-CanInterface::CanInterface(){
-    // deprecated function
-}
 double CanInterface::longitude = 0.0;
 double CanInterface::latitude = 0.0;
 double CanInterface::startLongitude = 0.0;
@@ -36,11 +37,12 @@ float CanInterface::brakeTempFR = 0;
 float CanInterface::brakeTempRL = 0;
 float CanInterface::brakeTempRR = 0;
 bool CanInterface::lapstart = false;
+uint8_t numGear = 0;
 
 CAN_message_t CanInterface::shift_msg; //Receives message from teensy
 bool CanInterface::canActive = false;
 
-bool CanInterface::init(){ // Init Can Interface Probaly dont change lol
+bool CanInterface::init(){ 
     pinMode(32,OUTPUT); digitalWrite(32,HIGH); 
     pinMode(33,OUTPUT); digitalWrite(33,HIGH);
 
@@ -50,8 +52,8 @@ bool CanInterface::init(){ // Init Can Interface Probaly dont change lol
 
     // Can0.setMBFilter(REJECT_ALL);  
 
-    // // Can0.setMBFilter(MB0, 0x640, 0x7F0);
-    // // Can0.setMBFilter(MB0,1600);
+    // Can0.setMBFilter(MB0, 0x640, 0x7F0);
+    // Can0.setMBFilter(MB0,1600);
     // Can0.setMBFilter(MB1,1613);
 
     Can0.enableFIFO();
@@ -61,28 +63,30 @@ bool CanInterface::init(){ // Init Can Interface Probaly dont change lol
     
     return 1;
 }
+
 //Declares cases for each of the following i.e. Overrun sets up an overflow flags
 void CanInterface::print_can_sniff(const CAN_message_t &msg){
-    Serial.print("MB "); Serial.print(msg.mb);
-    Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);
-    Serial.print("  LEN: "); Serial.print(msg.len);
-    Serial.print(" EXT: "); Serial.print(msg.flags.extended);
-    Serial.print(" TS: "); Serial.print(msg.timestamp);
-    Serial.print(" ID: "); Serial.print(msg.id, DEC);
-    Serial.print(" Buffer: ");
+    DEBUG_PRINT("MB "); DEBUG_PRINT(msg.mb);
+    DEBUG_PRINT("  OVERRUN: "); DEBUG_PRINT(msg.flags.overrun);
+    DEBUG_PRINT("  LEN: "); DEBUG_PRINT(msg.len);
+    DEBUG_PRINT(" EXT: "); DEBUG_PRINT(msg.flags.extended);
+    DEBUG_PRINT(" TS: "); DEBUG_PRINT(msg.timestamp);
+    DEBUG_PRINT(" ID: "); DEBUG_PRINT(msg.id, DEC);
+    DEBUG_PRINT(" Buffer: ");
     //Prints this in Decimal
     for ( uint8_t i = 0; i < msg.len; i++ ) {
-        Serial.print(msg.buf[i], DEC); Serial.print(" ");
+        DEBUG_PRINT_DEC((msg.buf[i])); 
     } 
-    Serial.println();
+    DEBUG_PRINT("\n");
 }
 //Reads the and sets the values for all ideal places baced on box
 void CanInterface::receive_can_updates(const CAN_message_t &msg) {
     canActive = true;
 
     if(millis() - lastTime >= 1000){
-        Serial.print("Msg Amount: ");
-        Serial.println(count);
+        DEBUG_PRINT("Msg Amount: ");
+        DEBUG_PRINT(count);
+        DEBUG_PRINT("\n");
         lastTime = millis();
         count = 0;
     }
@@ -100,7 +104,8 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             // Serial.printf("Gear: %d", millis());
             // Serial.print(" ");
             // Serial.println(msg.buf[6] & 15);
-            NextionInterface::setGear(msg.buf[6] & 15);
+            NextionInterface::setGear(msg.buf[6] & 15); //filter the byte
+            numGear=msg.buf[6] & 15; 
 
             break;
         }
@@ -109,7 +114,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
         case 1600: {
             uint16_t rpm = (msg.buf[1] | (msg.buf[0] << 8));
             NextionInterface::setRPM(rpm);
-            RevLights::updateLights(rpm);
+            RevLight.updateLights(rpm, numGear);
 
             //uint16_t speed = (msg.buf[2]);
             // // NextionInterface::setSpeed(speed);
@@ -310,15 +315,17 @@ double CanInterface::haversine(double lat1, double lon1, double lat2, double lon
 }
 void CanInterface::lapTime(const bool button){
     if(button){
-        Serial.println("Lap Started");
+        DEBUG_PRINT("Lap Started");
+        DEBUG_PRINT("\n");
         startLongitude = longitude;
         startLatitude = latitude;
         lapStarted = true;
         lapStartTime = millis();
-        Serial.println(longitude);
+        DEBUG_PRINT(longitude);
+        DEBUG_PRINT("\n");
         lapstart = true;
     }
-    double distance = haversine(latitude, longitude, startLatitude, startLongitude) * 1000;
+    // double distance = haversine(latitude, longitude, startLatitude, startLongitude) * 1000; //potentially unused
     // Serial.println("Distance: " + String(distance));
     isInStartZone = (haversine(latitude, longitude, startLatitude, startLongitude) * 1000)< RADIUS_METERS;
     if(lapStarted && !wasInZone && isInStartZone && (millis() - lapStartTime > MIN_LAP_MS) && (startLongitude != 0) && (startLatitude != 0)){
@@ -378,7 +385,6 @@ void CanInterface::send_shift(const bool up, const bool down,const bool button3)
         shift_msg.buf[4] = 0;
         shift_msg.buf[5] = 0;
     }
-
 
     
     Can0.write(shift_msg);

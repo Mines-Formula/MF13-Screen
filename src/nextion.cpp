@@ -38,12 +38,10 @@ void NextionInterface::init() {
 short NextionInterface::ctof(short celsius) {
     return (celsius * 9 / 5) + 32;
 }
-
 // Convertt Kilometer per Hour to Miles per Hour
 short NextionInterface::kmhtomph(short kmh){
     return (kmh /1.6);
 }
-
 //Sends Message to message
 void NextionInterface::sendNextionMessage(String message) {
     // Serial.println(message);
@@ -105,8 +103,8 @@ void NextionInterface::setDriverMessage(uint16_t value) {
 }
 //Set the RPM on the screen
 void NextionInterface::setRPM(uint16_t value) {
-         int roundedValue = (value / 100);
-         roundedValue = roundedValue*100;
+         int roundedValue = (value / 50);
+         roundedValue = roundedValue*50;
 
         String instruction = "rpm.txt=\"" + String(roundedValue, DEC) + "\"";
         sendNextionMessage(instruction);
