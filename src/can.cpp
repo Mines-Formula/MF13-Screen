@@ -136,8 +136,10 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             // NextionInterface::setVoltage(msg.buf[5] * 0.1f);
             break;
         }
-           
-        
+        //driver switch 
+        case 242: {
+            NextionInterface::setDriver(msg.buf[6] & 15);
+        }
 
         // 1612: Warning flags
         case 1612: {

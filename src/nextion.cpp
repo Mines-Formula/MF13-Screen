@@ -92,6 +92,23 @@ void NextionInterface::setVoltage(float value) {
         sendNextionMessage(instruction);
     // }
 }
+void NextionInterface::setDriver(int Driver){
+    String instruction;
+    if(Driver==0){
+        //Go To
+        switchToDiagnostic();
+        //if dial is spinny remove driver from the diagnostic display
+        instruction = "driverVar.txt=\"Cool Person\"";
+    }else{
+        //Ensure on driver scrren
+        switchToDriver();
+        //send driver name
+        instruction = "driverVar.txt=\"" + String(Driver) + "\"";
+        
+    }
+    sendNextionMessage(instruction);
+
+}
 //Send a message to the driver
 void NextionInterface::setDriverMessage(uint16_t value) {
     if(value != currentMessage) {

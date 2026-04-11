@@ -110,7 +110,12 @@ public:
      * @param value 
      */
     static void setVoltage(float value);
-    
+    /**
+     * @brief Set Drivers name
+     * 
+     * @param value 
+     */
+    static void setDriver(int value);
     /**
      * @brief Set the Driver Message 
      * 

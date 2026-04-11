@@ -92,27 +92,21 @@ void RevLights::updateLights(int rpm, uint8_t numGear) { //DEV NOTE: If this cla
 
     pixels.clear();
     
-    if ((rpm >= RPMShiftPoints[numGear]+150)||(numGear==0&&rpm>8000)) { //ask because this should probably be basied on the gear
+    if (rpm >= RPMShiftPoints[numGear]+150) {
         // All red at/over redline
         pixels.setBrightness(255);
 
 
-    setAllColor(LED_COLOR_RED);
-                //for (int i = 0; i < NUM_PIXELS; ++i) {
-            //pixels.setPixelColor(i, LED_COLOR_RED);
-        //}
+        setAllColor(LED_COLOR_RED);
+ 
     } else if (rpm == 0) {
 
         // All green when engine is off
             pixels.setBrightness(75);
    
-             for (int i = 0; i < NUM_PIXELS; ++i) {
-            pixels.setPixelColor(i, LED_COLOR_GREEN);
-        }
-        
+            setAllColor(LED_COLOR_GREEN);
     } else if(rpm>=RPMShiftPoints[numGear]-150){ //sets all lights to blue at shift point
-        //pixels.clear();
-        //pixels.show();
+        //flash blue with red ends (full brightness) to indicate time to start shifting
         pixels.setBrightness(255);
         for (int i = 0; i < NUM_PIXELS; ++i) {
             if(i<2 || i>9){
@@ -120,7 +114,7 @@ void RevLights::updateLights(int rpm, uint8_t numGear) { //DEV NOTE: If this cla
             }else{
             pixels.setPixelColor(i, LED_COLOR_BLUE);
             }
-            //flash blue(full brightness) bring their attetion
+            
         } 
     } else {
         pixels.setBrightness(75);
