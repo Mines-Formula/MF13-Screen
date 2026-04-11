@@ -301,7 +301,10 @@ void CanInterface::task(){
 void CanInterface::canRecieveFailure(){
     if (millis()- lastCanMessageTimeStamp > 5000){
         RevLight.noCanMessageWarning();
+        
     }
+
+
 }
 
 

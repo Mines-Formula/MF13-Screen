@@ -13,13 +13,18 @@ void RevLights::begin(uint8_t brightness, bool initSerial, uint32_t serialBaud)
         // }
 
         pixels.begin();
-        pixels.setBrightness(brightness);
+        pixels.setBrightness(75);
         pixels.clear();
         pixels.show();
         setLEDThreshold();
 
         delay(100);
         updateLights(0 , 0);
+        
+        
+
+
+
 }
 
 //f\left(g,l,i\right)=\frac{\left(g-l\right)}{11}\left(i\right)+l
@@ -65,14 +70,18 @@ void RevLights::setLEDThreshold(){
     }
 }
 
-void RevLights::setallcolor(int const COLOR){
+void RevLights::setAllColor(int const COLOR){
         for (int i = 0; i < NUM_PIXELS; ++i) {
             pixels.setPixelColor(i, COLOR);
         }
 }  
 
 void RevLights::noCanMessageWarning(){ 
-    setallcolor(RevLight.LED_COLOR_VAPORWAVE_DEEP_MAGENTA);
+    pixels.clear();
+    pixels.show();
+    pixels.setBrightness(255);
+    setAllColor(LED_COLOR_VAPORWAVE_DEEP_MAGENTA);
+    pixels.show();
 }
 
 void RevLights::updateLights(int rpm, uint8_t numGear) { //DEV NOTE: If this class is failing, it likely means data types arent being initialized
@@ -86,15 +95,24 @@ void RevLights::updateLights(int rpm, uint8_t numGear) { //DEV NOTE: If this cla
     if ((rpm >= RPMShiftPoints[numGear]+150)||(numGear==0&&rpm>8000)) { //ask because this should probably be basied on the gear
         // All red at/over redline
         pixels.setBrightness(255);
-        setallcolor(LED_COLOR_RED);
+
+
+    setAllColor(LED_COLOR_RED);
+                //for (int i = 0; i < NUM_PIXELS; ++i) {
+            //pixels.setPixelColor(i, LED_COLOR_RED);
+        //}
     } else if (rpm == 0) {
 
         // All green when engine is off
-        pixels.setBrightness(75);
-        setallcolor(LED_COLOR_GREEN);
+            pixels.setBrightness(75);
+   
+             for (int i = 0; i < NUM_PIXELS; ++i) {
+            pixels.setPixelColor(i, LED_COLOR_GREEN);
+        }
+        
     } else if(rpm>=RPMShiftPoints[numGear]-150){ //sets all lights to blue at shift point
-        pixels.clear();
-        pixels.show();
+        //pixels.clear();
+        //pixels.show();
         pixels.setBrightness(255);
         for (int i = 0; i < NUM_PIXELS; ++i) {
             if(i<2 || i>9){
@@ -103,7 +121,7 @@ void RevLights::updateLights(int rpm, uint8_t numGear) { //DEV NOTE: If this cla
             pixels.setPixelColor(i, LED_COLOR_BLUE);
             }
             //flash blue(full brightness) bring their attetion
-        }
+        } 
     } else {
         pixels.setBrightness(75);
         // Fill according to thresholds
