@@ -10,7 +10,7 @@
 #include "can_debug.h" 
 
 
-FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> CanInterface::Can0; //Declare Object CanInterface
+FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> CanInterface::Can0; //Declare Object CanInterface 
 
 double CanInterface::longitude = 0.0;
 double CanInterface::latitude = 0.0;
@@ -41,6 +41,9 @@ uint8_t numGear = 0;
 
 CAN_message_t CanInterface::shift_msg; //Receives message from teensy
 bool CanInterface::canActive = false;
+
+//used to check timestamp when can sends a message
+uint32_t lastCanMessageTimeStamp=0;
 
 bool CanInterface::init(){ 
     pinMode(32,OUTPUT); digitalWrite(32,HIGH); 
@@ -82,14 +85,16 @@ void CanInterface::print_can_sniff(const CAN_message_t &msg){
 //Reads the and sets the values for all ideal places baced on box
 void CanInterface::receive_can_updates(const CAN_message_t &msg) {
     canActive = true;
+    lastCanMessageTimeStamp=millis();//recoreds the time a can message is receved
 
-    if(millis() - lastTime >= 1000){
+    if(lastCanMessageTimeStamp - lastTime >= 1000){
         DEBUG_PRINT("Msg Amount: ");
         DEBUG_PRINT(count);
         DEBUG_PRINT("\n");
-        lastTime = millis();
+        lastTime = lastCanMessageTimeStamp;
         count = 0;
     }
+    
 
 
     count++;
@@ -290,7 +295,17 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
 void CanInterface::task(){
     Can0.events();
+    canRecieveFailure();
 }
+
+void CanInterface::canRecieveFailure(){
+    if (millis()- lastCanMessageTimeStamp > 5000){
+        RevLight.noCanMessageWarning();
+    }
+}
+
+
+ 
 
 double toRadians(double degree){
     return degree * M_PI / 180;

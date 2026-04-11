@@ -65,6 +65,16 @@ void RevLights::setLEDThreshold(){
     }
 }
 
+void RevLights::setallcolor(int const COLOR){
+        for (int i = 0; i < NUM_PIXELS; ++i) {
+            pixels.setPixelColor(i, COLOR);
+        }
+}  
+
+void RevLights::noCanMessageWarning(){ 
+    setallcolor(RevLight.LED_COLOR_VAPORWAVE_DEEP_MAGENTA);
+}
+
 void RevLights::updateLights(int rpm, uint8_t numGear) { //DEV NOTE: If this class is failing, it likely means data types arent being initialized
     // Memory hasnt initialized yet   
     if (ledRPMThresholds[0].thresholds == nullptr) {
@@ -76,15 +86,12 @@ void RevLights::updateLights(int rpm, uint8_t numGear) { //DEV NOTE: If this cla
     if ((rpm >= RPMShiftPoints[numGear]+150)||(numGear==0&&rpm>8000)) { //ask because this should probably be basied on the gear
         // All red at/over redline
         pixels.setBrightness(255);
-        for (int i = 0; i < NUM_PIXELS; ++i) {
-            pixels.setPixelColor(i, LED_COLOR_RED);
-        }
+        setallcolor(LED_COLOR_RED);
     } else if (rpm == 0) {
-        pixels.setBrightness(75);
+
         // All green when engine is off
-        for (int i = 0; i < NUM_PIXELS; ++i) {
-            pixels.setPixelColor(i, LED_COLOR_GREEN);
-        }
+        pixels.setBrightness(75);
+        setallcolor(LED_COLOR_GREEN);
     } else if(rpm>=RPMShiftPoints[numGear]-150){ //sets all lights to blue at shift point
         pixels.clear();
         pixels.show();
