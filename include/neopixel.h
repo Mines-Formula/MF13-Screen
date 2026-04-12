@@ -31,7 +31,7 @@ public:
     constexpr static const int LED_COLOR_OFF = 0;
     ledRPMThreshold ledRPMThresholds[NUM_PIXELS]; //makes a pointer to threshold and color 
     constexpr static const int RPMShiftPoints[7]={7850,12510,11643,11322,11017,10834,12000};
-    constexpr static const int RPMShiftDownPoints[7]={0,8000,9100,9700,9800,9900,10000};
+    constexpr static const int RPMShiftDownPoints[7]={0,8000,9100,9700,9800,9900,10000};//check the 8000 for shift from first to nutral
 
 
     /**

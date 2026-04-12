@@ -137,8 +137,15 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             break;
         }
         //driver switch 
-        case 242: {
-            NextionInterface::setDriver(msg.buf[6] & 15);
+        case 0x07F2: {
+            // for (int i = 0; i <2; i++) {
+            // Serial.print(msg.buf[i]);
+            // //Serial.print("\t"); // Adds a tab space between bytes for alignment
+            // }
+  
+            //Serial.println((msg.buf[0] << 8 | msg.buf[1])/1000);
+            NextionInterface::setDriver((msg.buf[0] << 8 | msg.buf[1])/1000);
+            
         }
 
         // 1612: Warning flags
@@ -297,16 +304,21 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
 void CanInterface::task(){
     Can0.events();
-    SupeSerialReadingFunction();
+    //SupeSerialReadingFunction();
     canRecieveFailure();
+    
 }
 void CanInterface::SupeSerialReadingFunction(){
 //this is supper cool and will do something at some point
+NextionInterface::setDriver(3);
+NextionInterface::setGear(0);
 }
 
 
 void CanInterface::canRecieveFailure(){
-    if (millis()- lastCanMessageTimeStamp > 5000){
+    //Serial.println(lastCanMessageTimeStamp);
+
+    if (millis()- lastCanMessageTimeStamp > 100){
         RevLight.noCanMessageWarning();
         
     }

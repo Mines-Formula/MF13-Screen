@@ -26,6 +26,7 @@ bool NextionInterface::startupFan = false;
 bool NextionInterface::startupFuelPump = false;
 bool NextionInterface::startupMLI = false;
 bool NextionInterface::startupMessage = false;
+String NextionInterface::Drivers[5] = {"Austin", "Sammy","Jimmy","Schimmy","Noah"};
 NextionInterface::NextionInterface() {}
 
 void NextionInterface::init() {
@@ -98,12 +99,16 @@ void NextionInterface::setDriver(int Driver){
         //Go To
         switchToDiagnostic();
         //if dial is spinny remove driver from the diagnostic display
-        instruction = "driverVar.txt=\"Cool Person\"";
+        instruction = "driverVar.txt=\"Dnostic\"";
     }else{
         //Ensure on driver scrren
         switchToDriver();
         //send driver name
-        instruction = "driverVar.txt=\"" + String(Driver) + "\"";
+        if(Driver-1<sizeof(Drivers)/sizeof(Drivers[0])){
+        instruction = "driverVar.txt=\"" + String(Drivers[Driver-1]) + "\"";
+        }else{
+            instruction = "driverVar.txt=\"No Driver Set\"";
+        }
         
     }
     sendNextionMessage(instruction);
