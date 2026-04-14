@@ -5,7 +5,7 @@ void RevLights::begin(uint8_t brightness, bool initSerial, uint32_t serialBaud)
     {
         if(initSerial){
             Serial.begin(serialBaud);
-            Serial.println("RevLights begin()");
+            DEBUG_PRINT("RevLights begin()");
         }
 
         // if(!ledRPMThresholds){

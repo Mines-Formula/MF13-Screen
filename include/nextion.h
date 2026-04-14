@@ -4,6 +4,7 @@
 #include <string>
 #include <Arduino.h>
 #include "can.h"
+#include "can_debug.h"
 
 enum page
 {
@@ -52,12 +53,13 @@ private:
     static uint8_t brakeTempPrev;
     static float batteryVoltage;
     static uint16_t engineRPM;
-    static uint16_t displayRPM;
+    //static uint16_t displayRPM;
     static float lambda;
     static int8_t gear;
     static uint16_t prevmph;
     static uint16_t currentMessage;
     static double prevLapTime;
+    static int8_t Driver;
     static String Drivers[5];
 public:
     NextionInterface();
@@ -104,7 +106,13 @@ public:
      * @param value2 
      */
     static void setOilPressure(uint8_t value, uint8_t value2);
-
+    /**
+    * @brief Update new screens with the old values
+     * 
+     * 
+     * 
+     */
+    static void switchScreenUpdate();
     /**
      * @brief Set the Voltage 
      * 

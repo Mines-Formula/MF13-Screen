@@ -26,14 +26,17 @@ bool NextionInterface::startupFan = false;
 bool NextionInterface::startupFuelPump = false;
 bool NextionInterface::startupMLI = false;
 bool NextionInterface::startupMessage = false;
+int8_t NextionInterface::Driver=0;
 String NextionInterface::Drivers[5] = {"Austin", "Sammy","Jimmy","Schimmy","Noah"};
 NextionInterface::NextionInterface() {}
 
 void NextionInterface::init() {
     Serial2.begin(9600);
     delay(200);
-    Serial.println("Nextion Setup");
+    DEBUG_PRINT("Nextion Setup");
     switchToLoading();
+    setDriver(1);
+    
 }
 //Converts the given value from Celsius to Farenheight
 short NextionInterface::ctof(short celsius) {
@@ -50,6 +53,38 @@ void NextionInterface::sendNextionMessage(String message) {
     Serial2.write(255);
     Serial2.write(255);
     Serial2.write(255);
+}
+void NextionInterface::switchScreenUpdate(){
+    String instruction = "waterTempVar.txt=\"" + static_cast<String>(ctof(waterTemp)) + "F\"";
+    sendNextionMessage(instruction);
+    instruction = "oilTempVar.txt=\"" + static_cast<String>(ctof(oilTemp))+"F\"";
+    sendNextionMessage(instruction);
+    instruction = "oilPressureVar.txt=\"" + static_cast<String>(oilPressure) + " PSI\"";
+    sendNextionMessage(instruction);
+    instruction = "voltageVar.txt=\"" + String(batteryVoltage, 1) + " V\"";
+    sendNextionMessage(instruction);
+    if(currentMessage != 0){
+    instruction = "messageDriver.txt=\"" + String(currentMessage) + "\"";
+    sendNextionMessage(instruction);
+    }
+    instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
+    sendNextionMessage(instruction);
+    if (gear == 0){
+            instruction = "gearShiftVar.txt=\"" + String('N') + '\"';
+            
+        }else{
+            instruction = "gearShiftVar.txt=\"" + String(gear) + '\"';
+            
+        }
+    sendNextionMessage(instruction);
+    instruction = "lambda.txt=\"" + String(lambda, 3) + " LA\"";
+    sendNextionMessage(instruction);
+
+
+    //no buttons or pumps yet will add if needed
+
+
+
 }
 //Sets the Water Temp on Screen
 void NextionInterface::setWaterTemp(int value) {
@@ -86,16 +121,18 @@ void NextionInterface::setOilPressure(uint8_t value, uint8_t value2) {
 }
 //Sets voltage for current screen would have to be multiplied by 100
 void NextionInterface::setVoltage(float value) {
-    // if (value != batteryVoltage) {
+    if (value != batteryVoltage) {
         batteryVoltage = value;
 
-        String instruction = "voltageVar.txt=\"" + String(value, DEC) + " V\"";
+        String instruction = "voltageVar.txt=\"" + String(value, 1) + " V\"";
         sendNextionMessage(instruction);
-    // }
+    }
 }
-void NextionInterface::setDriver(int Driver){
+void NextionInterface::setDriver(int value){
     String instruction;
-    if(Driver==0){
+    if(value!=Driver){
+        Driver=value;
+    if(value==0){
         //Go To
         switchToDiagnostic();
         //if dial is spinny remove driver from the diagnostic display
@@ -104,12 +141,13 @@ void NextionInterface::setDriver(int Driver){
         //Ensure on driver scrren
         switchToDriver();
         //send driver name
-        if(Driver-1<sizeof(Drivers)/sizeof(Drivers[0])){
-        instruction = "driverVar.txt=\"" + String(Drivers[Driver-1]) + "\"";
+        if(value-1<sizeof(Drivers)/sizeof(Drivers[0])){
+        instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
         }else{
             instruction = "driverVar.txt=\"No Driver Set\"";
         }
         
+    }
     }
     sendNextionMessage(instruction);
 
@@ -126,9 +164,9 @@ void NextionInterface::setDriverMessage(uint16_t value) {
 //Set the RPM on the screen
 void NextionInterface::setRPM(uint16_t value) {
          int roundedValue = (value / 50);
-         roundedValue = roundedValue*50;
+         engineRPM = roundedValue*50;
 
-        String instruction = "rpm.txt=\"" + String(roundedValue, DEC) + "\"";
+        String instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
         sendNextionMessage(instruction);
 
 }
@@ -273,13 +311,22 @@ void NextionInterface::switchToStartUp() {
 void NextionInterface::switchToDriver() {
     if(current_page != page::DRIVER){
         sendNextionMessage("page DRIVER");
+        if(current_page == page::DIAGNOSTICS){
+            //pull data from last view and move it to next
+            switchScreenUpdate();
+        }
         current_page = page::DRIVER;
+        
     }
 }
 
 void NextionInterface::switchToDiagnostic(){
     if(current_page != page::DIAGNOSTICS){
         sendNextionMessage("page DIAGNOSTICS");
+        if(current_page == page::DRIVER){
+            //pull data from last view and move it to next
+            switchScreenUpdate();
+        }
         current_page = page::DIAGNOSTICS;
     }
 }

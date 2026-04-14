@@ -5,6 +5,7 @@
 #include <nextion.h>
 #include <neopixel.h>
 #include <can.h>
+#include <can_debug.h>
 
 extern CanInterface can;
 extern NextionInterface screen;

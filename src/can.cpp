@@ -109,8 +109,9 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             // Serial.printf("Gear: %d", millis());
             // Serial.print(" ");
             // Serial.println(msg.buf[6] & 15);
-            NextionInterface::setGear(msg.buf[6] & 15); //filter the byte
             numGear=msg.buf[6] & 15; 
+            NextionInterface::setGear(numGear); //filter the byte
+            
 
             break;
         }
@@ -133,7 +134,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             // Problem Area
             NextionInterface::setWaterTemp(msg.buf[0] - 40);
             NextionInterface::setOilTemp(msg.buf[1] - 40);
-            // NextionInterface::setVoltage(msg.buf[5] * 0.1f);
+            NextionInterface::setVoltage((int)((msg.buf[5] * 0.1f) * 10) / 10.0);
             break;
         }
         //driver switch 
@@ -143,7 +144,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             // //Serial.print("\t"); // Adds a tab space between bytes for alignment
             // }
   
-            //Serial.println((msg.buf[0] << 8 | msg.buf[1])/1000);
+            Serial.println((msg.buf[0] << 8 | msg.buf[1])/1000);
             NextionInterface::setDriver((msg.buf[0] << 8 | msg.buf[1])/1000);
             
         }
@@ -180,27 +181,27 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
          //Makes it slow
         case 1284: {
 
-            // if(msg.buf[0] == 0 || msg.buf[0] == 1){
-            //     if(msg.buf[1] == 0 || msg.buf[1] == 1){
-            //         NextionInterface::setWaterPumpBool(msg.buf[1]);
-            //     } 
-            //     else
-            //         Serial.println("Water Pump Error");
+            if(msg.buf[0] == 0 || msg.buf[0] == 1){
+                if(msg.buf[1] == 0 || msg.buf[1] == 1){
+                    NextionInterface::setWaterPumpBool(msg.buf[1]);
+                } 
+                else
+                    Serial.println("Water Pump Error");
 
-            //     if(msg.buf[0] == 0 || msg.buf[0] == 1){
-            //         //NextionInterface::setFuelPumpValue(msg.buf[0]);
-            //         NextionInterface::setFuelPumpBool(msg.buf[0]);
-            //     }   
-            //     else
-            //         Serial.println("Fuel Pump Error");
+                if(msg.buf[0] == 0 || msg.buf[0] == 1){
+                    //NextionInterface::setFuelPumpValue(msg.buf[0]);
+                    NextionInterface::setFuelPumpBool(msg.buf[0]);
+                }   
+                else
+                    Serial.println("Fuel Pump Error");
 
-            //     if(msg.buf[3] == 0 || msg.buf[3] == 1){
+                if(msg.buf[3] == 0 || msg.buf[3] == 1){
 
-            //         NextionInterface::setFanBool(msg.buf[3]);
-            //     }
-            //     else
-            //         Serial.println("Fan Error");
-            // }
+                    NextionInterface::setFanBool(msg.buf[3]);
+                }
+                else
+                    DEBUG_PRINT("Fan Error");
+            }
              break;
         }
         

@@ -1,5 +1,6 @@
 #include <Adafruit_NeoPixel.h>
 #include <Arduino.h>
+#include "can_debug.h"
 
 #ifndef NEOPIXEL_H
 #define NEOPIXEL_H
