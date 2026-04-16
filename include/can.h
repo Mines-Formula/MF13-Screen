@@ -67,9 +67,9 @@ public:
     static double startLongitude;
     static double startLatitude;
     static bool lapStarted;
-    static uint64_t lapStartTime;
-    static u_int16_t fastLapTime;
-    static int16_t delta;
+    static double lapStartTime;
+    static double fastLapTime;
+    static double delta;
     
     static bool isInStartZone;
 

@@ -18,7 +18,7 @@ double CanInterface::startLongitude = 0.0;
 double CanInterface::startLatitude = 0.0;
 
 bool CanInterface::lapStarted = false;
-uint64_t CanInterface::lapStartTime = 0;
+double CanInterface::lapStartTime = 0;
 
 bool CanInterface::isInStartZone = false;
 bool CanInterface::wasInZone   = false;
@@ -26,8 +26,9 @@ static const double MIN_LAP_MS = 10000.0;
 static const double RADIUS_METERS = 10.0;
 double CanInterface::lapTimeSeconds = 0;
 double CanInterface::lapTimeEnd = 0;
-uint16_t CanInterface::fastLapTime = 0;
-int16_t CanInterface::delta = 0;
+double CanInterface::fastLapTime = 0;
+double CanInterface::delta = 0;
+
 bool firstLap = false;
 int CanInterface::count = 0;
 int CanInterface::lastTime = 0;
@@ -313,6 +314,7 @@ double CanInterface::haversine(double lat1, double lon1, double lat2, double lon
     return distance;
 
 }
+
 void CanInterface::lapTime(const bool button){
     if(button){
         DEBUG_PRINT("Lap Started");

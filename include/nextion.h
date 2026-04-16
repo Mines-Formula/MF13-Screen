@@ -32,18 +32,16 @@ private:
     static int const GREEN_BUTTON_ID = 5;
     static int const RED_BUTTON_ID = 4;
     
-    static bool startupWaterTemp;
-    static bool startupWaterPump;
-    static bool startupOilTemp;
-    static bool startupOilPump;
-    static bool startupVoltage;
-    static bool startupRPM;
+    static bool waterTemp;
+    static bool waterPump;
+    static bool oilTemp;
+    static bool oilPump;
+    static bool voltage;
     static bool startupSpeed;
-    static bool startupFuelPump;
-    static bool startupFan;
-    static bool startupMLI;
-    static bool startupMessage;
-    static bool startupGear;
+    static bool fuelPump;
+    static bool fan;
+    static bool MLI;
+    static bool message;
     static int image;
     static bool neutral;
     static uint8_t waterTemp;
@@ -56,6 +54,7 @@ private:
     static float lambda;
     static int8_t gear;
     static uint16_t prevmph;
+    static uint16_t delta;
     static uint16_t currentMessage;
     static double prevLapTime;
 public:
