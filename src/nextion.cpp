@@ -20,19 +20,13 @@ bool NextionInterface::oilTemp = false;
 bool NextionInterface::oilPump = false;
 bool NextionInterface::voltage = false;
 bool NextionInterface::neutral = false;
-<<<<<<< HEAD
 bool NextionInterface::fan = false;
 bool NextionInterface::fuelPump = false;
 bool NextionInterface::MLI = false;
 bool NextionInterface::message = false;
-=======
-bool NextionInterface::startupFan = false;
-bool NextionInterface::startupFuelPump = false;
-bool NextionInterface::startupMLI = false;
-bool NextionInterface::startupMessage = false;
+
 int8_t NextionInterface::Driver=0;
 String NextionInterface::Drivers[5] = {"Austin", "Sammy","Jimmy","Schimmy","Noah"};
->>>>>>> 5d2a7dcf6631711c6bc99f5816664e0b34655503
 NextionInterface::NextionInterface() {}
 
 void NextionInterface::init() {
@@ -128,8 +122,6 @@ void NextionInterface::setVoltage(float value) {
         String instruction = "voltageVar.txt=\"" + String(value, 1) + " V\"";
         sendNextionMessage(instruction);
     }
-<<<<<<< HEAD
-=======
 }
 void NextionInterface::setDriver(int value){
     String instruction;
@@ -154,7 +146,6 @@ void NextionInterface::setDriver(int value){
     }
     sendNextionMessage(instruction);
 
->>>>>>> 5d2a7dcf6631711c6bc99f5816664e0b34655503
 }
 //Send a message to the driver
 void NextionInterface::setDriverMessage(uint16_t value) {
@@ -167,15 +158,10 @@ void NextionInterface::setDriverMessage(uint16_t value) {
 }
 //Set the RPM on the screen
 void NextionInterface::setRPM(uint16_t value) {
-<<<<<<< HEAD
     value = (value / 50);
     value = value*50;
     if(value != engineRPM){
         engineRPM = value;
-=======
-         int roundedValue = (value / 50);
-         engineRPM = roundedValue*50;
->>>>>>> 5d2a7dcf6631711c6bc99f5816664e0b34655503
 
         String instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
         sendNextionMessage(instruction);
