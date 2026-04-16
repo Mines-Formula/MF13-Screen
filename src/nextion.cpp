@@ -14,16 +14,14 @@ uint16_t NextionInterface::prevmph = -1;
 uint16_t NextionInterface::currentMessage = 0;
 double NextionInterface::prevLapTime = -1;
 uint8_t NextionInterface::brakeTempPrev = 0;
-bool NextionInterface::waterTemp = false;
-bool NextionInterface::waterPump = false;
-bool NextionInterface::oilTemp = false;
-bool NextionInterface::oilPump = false;
-bool NextionInterface::voltage = false;
-bool NextionInterface::neutral = false;
-bool NextionInterface::fan = false;
-bool NextionInterface::fuelPump = false;
-bool NextionInterface::MLI = false;
-bool NextionInterface::message = false;
+bool NextionInterface::waterPumpBool = false;
+bool NextionInterface::oilTempBool = false;
+bool NextionInterface::oilPumpBool = false;
+bool NextionInterface::voltageBool = false;
+bool NextionInterface::fanBool = false;
+bool NextionInterface::fuelPumpBool = false;
+bool NextionInterface::MLIBool = false;
+bool NextionInterface::messageBool = false;
 
 int8_t NextionInterface::Driver=0;
 String NextionInterface::Drivers[5] = {"Austin", "Sammy","Jimmy","Schimmy","Noah"};
@@ -78,12 +76,7 @@ void NextionInterface::switchScreenUpdate(){
     sendNextionMessage(instruction);
     instruction = "lambda.txt=\"" + String(lambda, 3) + " LA\"";
     sendNextionMessage(instruction);
-
-
     //no buttons or pumps yet will add if needed
-
-
-
 }
 //Sets the Water Temp on Screen
 void NextionInterface::setWaterTemp(int value) {
@@ -255,42 +248,42 @@ void NextionInterface::setButtonImage(String elementName, bool value) {
 
 //SET FLAGS
 void NextionInterface::setFuelPumpBool(bool value) {
-    if(value != fuelPump){
-        fuelPump = value;
+    if(value != fuelPumpBool){
+        fuelPumpBool = value;
 
-        setButtonImage("fuelPumpVar", fuelPump);
+        setButtonImage("fuelPumpVar", fuelPumpBool);
     }
 }
 
 void NextionInterface::setFanBool(bool value) {
-    if(value != fan){
-        fan = value;
+    if(value != fanBool){
+        fanBool = value;
 
-        setButtonImage("fanVar", fan);
+        setButtonImage("fanVar", fanBool);
     }
 }
 
 void NextionInterface::setWaterPumpBool(bool value) {
-    if(value != waterPump){
-        waterPump = value;
+    if(value != waterPumpBool){
+        waterPumpBool = value;
 
-        setButtonImage("waterPumpVar", waterPump);
+        setButtonImage("waterPumpVar", waterPumpBool);
     }
 }
 
 void NextionInterface::setMLIBool(bool value) {
-    if(value != MLI){
-        MLI = value;
+    if(value != MLIBool){
+        MLIBool = value;
 
-        setButtonImage("MLIVar", MLI);
+        setButtonImage("MLIVar", MLIBool);
     }
 }
 
 void NextionInterface::setMessageBool(bool value) {
-    if(value != message){
-        message = value;
+    if(value != messageBool){
+        messageBool = value;
 
-        setButtonImage("MessageVar", message);
+        setButtonImage("MessageVar", messageBool);
     }
 }
 
