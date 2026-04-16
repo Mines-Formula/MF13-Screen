@@ -10,7 +10,7 @@
 #include "can_debug.h" 
 
 
-FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> CanInterface::Can0; //Declare Object CanInterface
+FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> CanInterface::Can0; //Declare Object CanInterface 
 
 double CanInterface::longitude = 0.0;
 double CanInterface::latitude = 0.0;
@@ -42,6 +42,9 @@ uint8_t numGear = 0;
 
 CAN_message_t CanInterface::shift_msg; //Receives message from teensy
 bool CanInterface::canActive = false;
+
+//used to check timestamp when can sends a message
+uint32_t lastCanMessageTimeStamp=0;
 
 bool CanInterface::init(){ 
     pinMode(32,OUTPUT); digitalWrite(32,HIGH); 
@@ -83,14 +86,16 @@ void CanInterface::print_can_sniff(const CAN_message_t &msg){
 //Reads the and sets the values for all ideal places baced on box
 void CanInterface::receive_can_updates(const CAN_message_t &msg) {
     canActive = true;
+    lastCanMessageTimeStamp=millis();//recoreds the time a can message is receved
 
-    if(millis() - lastTime >= 1000){
+    if(lastCanMessageTimeStamp - lastTime >= 1000){
         DEBUG_PRINT("Msg Amount: ");
         DEBUG_PRINT(count);
         DEBUG_PRINT("\n");
-        lastTime = millis();
+        lastTime = lastCanMessageTimeStamp;
         count = 0;
     }
+    
 
 
     count++;
@@ -105,8 +110,9 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             // Serial.printf("Gear: %d", millis());
             // Serial.print(" ");
             // Serial.println(msg.buf[6] & 15);
-            NextionInterface::setGear(msg.buf[6] & 15); //filter the byte
             numGear=msg.buf[6] & 15; 
+            NextionInterface::setGear(numGear); //filter the byte
+            
 
             break;
         }
@@ -129,11 +135,20 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             // Problem Area
             NextionInterface::setWaterTemp(msg.buf[0] - 40);
             NextionInterface::setOilTemp(msg.buf[1] - 40);
-            // NextionInterface::setVoltage(msg.buf[5] * 0.1f);
+            NextionInterface::setVoltage((int)((msg.buf[5] * 0.1f) * 10) / 10.0);
             break;
         }
-           
-        
+        //driver switch 
+        case 0x07F2: {
+            // for (int i = 0; i <2; i++) {
+            // Serial.print(msg.buf[i]);
+            // //Serial.print("\t"); // Adds a tab space between bytes for alignment
+            // }
+  
+            Serial.println((msg.buf[0] << 8 | msg.buf[1])/1000);
+            NextionInterface::setDriver((msg.buf[0] << 8 | msg.buf[1])/1000);
+            
+        }
 
         // 1612: Warning flags
         case 1612: {
@@ -167,27 +182,27 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
          //Makes it slow
         case 1284: {
 
-            // if(msg.buf[0] == 0 || msg.buf[0] == 1){
-            //     if(msg.buf[1] == 0 || msg.buf[1] == 1){
-            //         NextionInterface::setWaterPumpBool(msg.buf[1]);
-            //     } 
-            //     else
-            //         Serial.println("Water Pump Error");
+            if(msg.buf[0] == 0 || msg.buf[0] == 1){
+                if(msg.buf[1] == 0 || msg.buf[1] == 1){
+                    NextionInterface::setWaterPumpBool(msg.buf[1]);
+                } 
+                else
+                    Serial.println("Water Pump Error");
 
-            //     if(msg.buf[0] == 0 || msg.buf[0] == 1){
-            //         //NextionInterface::setFuelPumpValue(msg.buf[0]);
-            //         NextionInterface::setFuelPumpBool(msg.buf[0]);
-            //     }   
-            //     else
-            //         Serial.println("Fuel Pump Error");
+                if(msg.buf[0] == 0 || msg.buf[0] == 1){
+                    //NextionInterface::setFuelPumpValue(msg.buf[0]);
+                    NextionInterface::setFuelPumpBool(msg.buf[0]);
+                }   
+                else
+                    Serial.println("Fuel Pump Error");
 
-            //     if(msg.buf[3] == 0 || msg.buf[3] == 1){
+                if(msg.buf[3] == 0 || msg.buf[3] == 1){
 
-            //         NextionInterface::setFanBool(msg.buf[3]);
-            //     }
-            //     else
-            //         Serial.println("Fan Error");
-            // }
+                    NextionInterface::setFanBool(msg.buf[3]);
+                }
+                else
+                    DEBUG_PRINT("Fan Error");
+            }
              break;
         }
         
@@ -291,7 +306,30 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
 void CanInterface::task(){
     Can0.events();
+    //SupeSerialReadingFunction();
+    canRecieveFailure();
+    
 }
+void CanInterface::SupeSerialReadingFunction(){
+//this is supper cool and will do something at some point
+NextionInterface::setDriver(3);
+NextionInterface::setGear(0);
+}
+
+
+void CanInterface::canRecieveFailure(){
+    //Serial.println(lastCanMessageTimeStamp);
+
+    if (millis()- lastCanMessageTimeStamp > 100){
+        RevLight.noCanMessageWarning();
+        
+    }
+
+
+}
+
+
+ 
 
 double toRadians(double degree){
     return degree * M_PI / 180;

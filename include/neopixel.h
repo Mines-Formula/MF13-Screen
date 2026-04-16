@@ -1,5 +1,6 @@
 #include <Adafruit_NeoPixel.h>
 #include <Arduino.h>
+#include "can_debug.h"
 
 #ifndef NEOPIXEL_H
 #define NEOPIXEL_H
@@ -27,10 +28,11 @@ public:
     constexpr static const int LED_COLOR_GREEN = 16711680;  // 0xFF0000
     constexpr static const int LED_COLOR_BLUE = 255;        // 0x0000FF
     constexpr static const int LED_COLOR_YELLOW = 8388352;
+    constexpr static const int LED_COLOR_VAPORWAVE_DEEP_MAGENTA = 52428; // 0x00FFFF 
     constexpr static const int LED_COLOR_OFF = 0;
     ledRPMThreshold ledRPMThresholds[NUM_PIXELS]; //makes a pointer to threshold and color 
-    constexpr static const int RPMShiftPoints[7]={8000,12510,11643,11322,11017,10834,12000};
-    constexpr static const int RPMShiftDownPoints[7]={0,8000,9100,9700,9800,9900,10000};
+    constexpr static const int RPMShiftPoints[7]={7850,12510,11643,11322,11017,10834,12000};
+    constexpr static const int RPMShiftDownPoints[7]={0,8000,9100,9700,9800,9900,10000};//check the 8000 for shift from first to nutral
 
 
     /**
@@ -59,7 +61,16 @@ public:
     /**
      * @brief startup light sequence
      */
-    static void startupSequence();
+    static void startupSequence(); 
+
+    void noCanMessageWarning (); 
+    
+    /**
+     * @brief sets all neopixles to one color
+     * 
+     */
+    void setAllColor(int const COLOR);   
+
 };
 
 extern RevLights RevLight;

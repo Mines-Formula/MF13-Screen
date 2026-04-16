@@ -20,17 +20,28 @@ bool NextionInterface::oilTemp = false;
 bool NextionInterface::oilPump = false;
 bool NextionInterface::voltage = false;
 bool NextionInterface::neutral = false;
+<<<<<<< HEAD
 bool NextionInterface::fan = false;
 bool NextionInterface::fuelPump = false;
 bool NextionInterface::MLI = false;
 bool NextionInterface::message = false;
+=======
+bool NextionInterface::startupFan = false;
+bool NextionInterface::startupFuelPump = false;
+bool NextionInterface::startupMLI = false;
+bool NextionInterface::startupMessage = false;
+int8_t NextionInterface::Driver=0;
+String NextionInterface::Drivers[5] = {"Austin", "Sammy","Jimmy","Schimmy","Noah"};
+>>>>>>> 5d2a7dcf6631711c6bc99f5816664e0b34655503
 NextionInterface::NextionInterface() {}
 
 void NextionInterface::init() {
     Serial2.begin(9600);
     delay(200);
-    Serial.println("Nextion Setup");
+    DEBUG_PRINT("Nextion Setup");
     switchToLoading();
+    setDriver(1);
+    
 }
 //Converts the given value from Celsius to Farenheight
 short NextionInterface::ctof(short celsius) {
@@ -47,6 +58,38 @@ void NextionInterface::sendNextionMessage(String message) {
     Serial2.write(255);
     Serial2.write(255);
     Serial2.write(255);
+}
+void NextionInterface::switchScreenUpdate(){
+    String instruction = "waterTempVar.txt=\"" + static_cast<String>(ctof(waterTemp)) + "F\"";
+    sendNextionMessage(instruction);
+    instruction = "oilTempVar.txt=\"" + static_cast<String>(ctof(oilTemp))+"F\"";
+    sendNextionMessage(instruction);
+    instruction = "oilPressureVar.txt=\"" + static_cast<String>(oilPressure) + " PSI\"";
+    sendNextionMessage(instruction);
+    instruction = "voltageVar.txt=\"" + String(batteryVoltage, 1) + " V\"";
+    sendNextionMessage(instruction);
+    if(currentMessage != 0){
+    instruction = "messageDriver.txt=\"" + String(currentMessage) + "\"";
+    sendNextionMessage(instruction);
+    }
+    instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
+    sendNextionMessage(instruction);
+    if (gear == 0){
+            instruction = "gearShiftVar.txt=\"" + String('N') + '\"';
+            
+        }else{
+            instruction = "gearShiftVar.txt=\"" + String(gear) + '\"';
+            
+        }
+    sendNextionMessage(instruction);
+    instruction = "lambda.txt=\"" + String(lambda, 3) + " LA\"";
+    sendNextionMessage(instruction);
+
+
+    //no buttons or pumps yet will add if needed
+
+
+
 }
 //Sets the Water Temp on Screen
 void NextionInterface::setWaterTemp(int value) {
@@ -82,9 +125,36 @@ void NextionInterface::setVoltage(float value) {
     if (value != batteryVoltage) {
         batteryVoltage = value;
 
-        String instruction = "voltageVar.txt=\"" + String(value, DEC) + " V\"";
+        String instruction = "voltageVar.txt=\"" + String(value, 1) + " V\"";
         sendNextionMessage(instruction);
     }
+<<<<<<< HEAD
+=======
+}
+void NextionInterface::setDriver(int value){
+    String instruction;
+    if(value!=Driver){
+        Driver=value;
+    if(value==0){
+        //Go To
+        switchToDiagnostic();
+        //if dial is spinny remove driver from the diagnostic display
+        instruction = "driverVar.txt=\"Dnostic\"";
+    }else{
+        //Ensure on driver scrren
+        switchToDriver();
+        //send driver name
+        if(value-1<sizeof(Drivers)/sizeof(Drivers[0])){
+        instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
+        }else{
+            instruction = "driverVar.txt=\"No Driver Set\"";
+        }
+        
+    }
+    }
+    sendNextionMessage(instruction);
+
+>>>>>>> 5d2a7dcf6631711c6bc99f5816664e0b34655503
 }
 //Send a message to the driver
 void NextionInterface::setDriverMessage(uint16_t value) {
@@ -97,10 +167,15 @@ void NextionInterface::setDriverMessage(uint16_t value) {
 }
 //Set the RPM on the screen
 void NextionInterface::setRPM(uint16_t value) {
+<<<<<<< HEAD
     value = (value / 50);
     value = value*50;
     if(value != engineRPM){
         engineRPM = value;
+=======
+         int roundedValue = (value / 50);
+         engineRPM = roundedValue*50;
+>>>>>>> 5d2a7dcf6631711c6bc99f5816664e0b34655503
 
         String instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
         sendNextionMessage(instruction);
@@ -251,13 +326,22 @@ void NextionInterface::switchToStartUp() {
 void NextionInterface::switchToDriver() {
     if(current_page != page::DRIVER){
         sendNextionMessage("page DRIVER");
+        if(current_page == page::DIAGNOSTICS){
+            //pull data from last view and move it to next
+            switchScreenUpdate();
+        }
         current_page = page::DRIVER;
+        
     }
 }
 
 void NextionInterface::switchToDiagnostic(){
     if(current_page != page::DIAGNOSTICS){
         sendNextionMessage("page DIAGNOSTICS");
+        if(current_page == page::DRIVER){
+            //pull data from last view and move it to next
+            switchScreenUpdate();
+        }
         current_page = page::DIAGNOSTICS;
     }
 }
