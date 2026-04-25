@@ -35,6 +35,8 @@ void NextionInterface::init() {
     DEBUG_PRINT("Nextion Setup");
     switchToLoading();
     setDriver(1);
+    switchToWarning("Hi");
+    
     
     
 }
@@ -72,7 +74,10 @@ void NextionInterface::switchScreenUpdate(){
     if (gear == 0){
             instruction = "gearShiftVar.txt=\"" + String('N') + '\"';
             
-        }else{
+    }else if(gear==-1){
+        instruction = "gearShiftVar.txt=\"" + String('Q') + '\"';
+
+    }else{
             instruction = "gearShiftVar.txt=\"" + String(gear) + '\"';
             
         }
@@ -123,24 +128,34 @@ void NextionInterface::setDriver(int value){
     String instruction;
     if(value!=Driver){
         Driver=value;
-    if(value==0){
-        //Go To
-        switchToDiagnostic();
-        //if dial is spinny remove driver from the diagnostic display
-        instruction = "driverVar.txt=\"Dnostic\"";
-    }else{
-        //Ensure on driver scrren
-        switchToDriver();
+        if (Driver==0){
+            switchToDiagnostic();
+            instruction = "driverVar.txt=\"Dnostic\"";
+    
+        }else if(Driver==1){
+            sendNextionMessage("page DRIVERaust");
+            instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
+            
+        }else if(Driver==5){
+            sendNextionMessage("page DRIVERnoah");
+            instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
+
+        }else{
+        sendNextionMessage("page DRIVER");
         //send driver name
         if(value-1<sizeof(Drivers)/sizeof(Drivers[0])){
         instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
         }else{
             instruction = "driverVar.txt=\"No Driver Set\"";
         }
+        }
         
+        
+        switchScreenUpdate();
+        sendNextionMessage(instruction);
+   
     }
-    }
-    sendNextionMessage(instruction);
+    
     
     
 
@@ -309,11 +324,19 @@ void NextionInterface::switchToStartUp() {
 
 void NextionInterface::switchToDriver() {
     if(current_page != page::DRIVER){
-        sendNextionMessage("page DRIVER");
-        if(current_page == page::DIAGNOSTICS){
-            //pull data from last view and move it to next
-            switchScreenUpdate();
+        if(Driver==1){
+            //sendNextionMessage("page DRIVERaust");
+            
+        }else if(Driver==5){
+            //endNextionMessage("page DRIVERnoah");
+
+        }else{
+        //sendNextionMessage("page DRIVER");
         }
+        
+        
+        //switchScreenUpdate();
+        
         current_page = page::DRIVER;
         
     }
@@ -343,14 +366,16 @@ void NextionInterface::switchToWarning(const String WARNING) {
         sendNextionMessage("DRIVER.bco=53248");
         sendNextionMessage("DRIVERnoah.bco=53248");
         sendNextionMessage("DRIVERaust.bco=53248");
-        //set the box
-        String instruction = "warningLabel.sta=solid color";
-        sendNextionMessage(instruction);
-
+   
+        
+        
+        sendNextionMessage("vis warningLabel,1");
         //set the text
-        instruction = String("warningLabel.txt=\"") + WARNING + "\"";
+        String instruction = String("warningLabel.txt=\"") + WARNING + "\"";
         //current_page = page::WARNING;
         sendNextionMessage(instruction);
+
+        
 
     }
 }

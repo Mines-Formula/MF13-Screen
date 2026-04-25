@@ -11,6 +11,8 @@ enum page
     LOADING,
     STARTUP,
     DRIVER,
+    DRIVERnoah,
+    DRIVERaust,
     YIPPEE,
     WARNING,
     DIAGNOSTICS
