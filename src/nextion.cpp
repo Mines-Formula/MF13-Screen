@@ -138,6 +138,15 @@ void NextionInterface::setDriver(int value){
     }
     }
     sendNextionMessage(instruction);
+    if(Driver==2){
+                instruction = "gearShiftVar.pco=53248";
+                sendNextionMessage(instruction);
+                instruction = "DRIVER.bco=53248";
+    
+
+    sendNextionMessage(instruction);
+    }
+    
 
 }
 //Send a message to the driver
