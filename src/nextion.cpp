@@ -14,6 +14,7 @@ uint16_t NextionInterface::prevmph = -1;
 uint16_t NextionInterface::currentMessage = 0;
 double NextionInterface::prevLapTime = -1;
 uint8_t NextionInterface::brakeTempPrev = 0;
+String NextionInterface::warningMessage="";
 bool NextionInterface::waterPumpBool = false;
 bool NextionInterface::oilTempBool = false;
 bool NextionInterface::oilPumpBool = false;
@@ -22,6 +23,7 @@ bool NextionInterface::fanBool = false;
 bool NextionInterface::fuelPumpBool = false;
 bool NextionInterface::MLIBool = false;
 bool NextionInterface::messageBool = false;
+bool NextionInterface::warningBool = false;
 
 int8_t NextionInterface::Driver=0;
 String NextionInterface::Drivers[5] = {"Austin", "Sammy","Jimmy","Schimmy","Noah"};
@@ -33,6 +35,7 @@ void NextionInterface::init() {
     DEBUG_PRINT("Nextion Setup");
     switchToLoading();
     setDriver(1);
+    
     
 }
 //Converts the given value from Celsius to Farenheight
@@ -138,14 +141,7 @@ void NextionInterface::setDriver(int value){
     }
     }
     sendNextionMessage(instruction);
-    if(Driver==2){
-                instruction = "gearShiftVar.pco=53248";
-                sendNextionMessage(instruction);
-                instruction = "DRIVER.bco=53248";
     
-
-    sendNextionMessage(instruction);
-    }
     
 
 }
@@ -339,11 +335,24 @@ void NextionInterface::switchToYippee() {
 }
 
 void NextionInterface::switchToWarning(const String WARNING) {
-    // if(current_page != page::WARNING){
-    //     sendNextionMessage("page WARNING");
-    //     String instructionName = String("warningLabel.txt=\"") + WARNING + "\"";
-    //     current_page = page::WARNING;
-    // }
+    warningBool=true;
+    if(warningMessage != WARNING){
+        warningMessage=WARNING;
+        //set the background
+        
+        sendNextionMessage("DRIVER.bco=53248");
+        sendNextionMessage("DRIVERnoah.bco=53248");
+        sendNextionMessage("DRIVERaust.bco=53248");
+        //set the box
+        String instruction = "warningLabel.sta=solid color";
+        sendNextionMessage(instruction);
+
+        //set the text
+        instruction = String("warningLabel.txt=\"") + WARNING + "\"";
+        //current_page = page::WARNING;
+        sendNextionMessage(instruction);
+
+    }
 }
 
 

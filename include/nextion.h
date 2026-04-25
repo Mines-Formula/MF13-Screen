@@ -42,6 +42,7 @@ private:
     static bool fanBool;
     static bool MLIBool;
     static bool messageBool;
+    static bool warningBool;
     static int image;
     static bool neutral;
     static uint8_t waterTemp;
@@ -49,6 +50,7 @@ private:
     static uint16_t oilPressure;
     static uint8_t brakeTempPrev;
     static float batteryVoltage;
+    static String warningMessage;
     static uint16_t engineRPM;
     //static uint16_t displayRPM;
     static float lambda;
@@ -59,6 +61,7 @@ private:
     static double prevLapTime;
     static int8_t Driver;
     static String Drivers[5];
+    
 public:
     NextionInterface();
     /**
