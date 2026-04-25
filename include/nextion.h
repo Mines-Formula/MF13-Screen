@@ -277,7 +277,7 @@ public:
      * @brief Switch Screen to Warning
      * 
      */
-    static void switchToWarning(String WARNING);
+    static void showWarning(String WARNING);
 
     /**
      *@brief Switch Screen to Diagnostic  */ 

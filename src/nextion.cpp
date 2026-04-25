@@ -35,7 +35,7 @@ void NextionInterface::init() {
     DEBUG_PRINT("Nextion Setup");
     switchToLoading();
     setDriver(1);
-    switchToWarning("Hi");
+    showWarning("Something Went Wrong");
     
     
     
@@ -357,12 +357,12 @@ void NextionInterface::switchToYippee() {
     
 }
 
-void NextionInterface::switchToWarning(const String WARNING) {
+void NextionInterface::showWarning(const String WARNING) {
     warningBool=true;
     if(warningMessage != WARNING){
         warningMessage=WARNING;
         //set the background
-        
+        sendNextionMessage("DIAGNOSTICS.bco=53248");
         sendNextionMessage("DRIVER.bco=53248");
         sendNextionMessage("DRIVERnoah.bco=53248");
         sendNextionMessage("DRIVERaust.bco=53248");
