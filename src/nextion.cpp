@@ -331,7 +331,13 @@ void NextionInterface::switchToWarning(const String WARNING) {
     if(current_page != page::WARNING){
         sendNextionMessage("page WARNING");
         String instructionName = String("warningLabel.txt=\"") + WARNING + "\"";
-        current_page = page::WARNING;
+        current_page = page::WARNING;//This is going to cause issues as it automaticly goes back to the driver on the screen this means old data including the driver will be lost
+        //we need to look into this especialy with drivers costom screens. The beload code is an AI option for a fix
+    //     std::thread([]() {
+    //     std::this_thread::sleep_for(std::chrono::seconds(3));
+    //     updateScreen();
+    // }).detach();
+
     }
 }
 
