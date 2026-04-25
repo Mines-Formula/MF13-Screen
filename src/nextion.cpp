@@ -305,10 +305,9 @@ void NextionInterface::switchToStartUp() {
 void NextionInterface::switchToDriver() {
     if(current_page != page::DRIVER){
         sendNextionMessage("page DRIVER");
-        if(current_page == page::DIAGNOSTICS){
-            //pull data from last view and move it to next
-            switchScreenUpdate();
-        }
+
+        switchScreenUpdate();
+        
         current_page = page::DRIVER;
         
     }
@@ -317,10 +316,9 @@ void NextionInterface::switchToDriver() {
 void NextionInterface::switchToDiagnostic(){
     if(current_page != page::DIAGNOSTICS){
         sendNextionMessage("page DIAGNOSTICS");
-        if(current_page == page::DRIVER){
-            //pull data from last view and move it to next
-            switchScreenUpdate();
-        }
+   
+        switchScreenUpdate();
+        
         current_page = page::DIAGNOSTICS;
     }
 }
@@ -330,11 +328,11 @@ void NextionInterface::switchToYippee() {
 }
 
 void NextionInterface::switchToWarning(const String WARNING) {
-    // if(current_page != page::WARNING){
-    //     sendNextionMessage("page WARNING");
-    //     String instructionName = String("warningLabel.txt=\"") + WARNING + "\"";
-    //     current_page = page::WARNING;
-    // }
+    if(current_page != page::WARNING){
+        sendNextionMessage("page WARNING");
+        String instructionName = String("warningLabel.txt=\"") + WARNING + "\"";
+        current_page = page::WARNING;
+    }
 }
 
 

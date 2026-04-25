@@ -153,27 +153,27 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
         // 1612: Warning flags
         case 1612: {
             // Bit masks (byte 5)
-            // constexpr uint8_t coolantMask     = 0b10000000; // bit 0
-            // constexpr uint8_t oilTempMask     = 0b00010000; // bit 3
-            // constexpr uint8_t oilPressureMask = 0b00001000; // bit 4
-            // constexpr uint8_t fuelPressureMask= 0b00000001; // bit 6
-            // bool coolantTempWarning = msg.buf[5] & coolantMask;
-            // bool oilTempWarning = msg.buf[5] & oilTempMask;
-            // bool oilPressureWarning = msg.buf[5] & oilPressureMask;
-            // bool fuelPressureWarning = msg.buf[5] & fuelPressureMask;            
+            constexpr uint8_t coolantMask     = 0b10000000; // bit 0
+            constexpr uint8_t oilTempMask     = 0b00010000; // bit 3
+            constexpr uint8_t oilPressureMask = 0b00001000; // bit 4
+            constexpr uint8_t fuelPressureMask= 0b00000001; // bit 6
+            bool coolantTempWarning = msg.buf[5] & coolantMask;
+            bool oilTempWarning = msg.buf[5] & oilTempMask;
+            bool oilPressureWarning = msg.buf[5] & oilPressureMask;
+            bool fuelPressureWarning = msg.buf[5] & fuelPressureMask;            
 
-            // if (coolantTempWarning ) {
-            //     NextionInterface::switchToWarning("Coolant Temp Warning");
-            // } else if(oilTempWarning){
-            //     NextionInterface::switchToWarning("Oil Temp Warning");
-            // } else if(oilPressureWarning){
-            //     NextionInterface::switchToWarning("Oil Pressure Warning");
-            // } else if(fuelPressureWarning){
-            //     NextionInterface::switchToWarning("Fuel Pressure Warning");
-            // }
-            //     else {
-            //     NextionInterface::switchToDriver();
-            // }
+            if (coolantTempWarning ) {
+                NextionInterface::switchToWarning("Coolant Temp Warning");
+            } else if(oilTempWarning){
+                NextionInterface::switchToWarning("Oil Temp Warning");
+            } else if(oilPressureWarning){
+                NextionInterface::switchToWarning("Oil Pressure Warning");
+            } else if(fuelPressureWarning){
+                NextionInterface::switchToWarning("Fuel Pressure Warning");
+            }
+                else {
+                NextionInterface::switchToDriver();
+            }
             break;
         }
           
@@ -260,30 +260,30 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
         }
         case 6:{
-            // int32_t brakeTempFLRaw = (msg.buf[0] | (msg.buf[1] << 8));
-            // int32_t brakeTempFRRaw = (msg.buf[2] | (msg.buf[3] << 8));
-            // brakeTempFL = brakeTempFLRaw * 0.1f;
-            // brakeTempFR= brakeTempFRRaw * 0.1f;
+            int32_t brakeTempFLRaw = (msg.buf[0] | (msg.buf[1] << 8));
+            int32_t brakeTempFRRaw = (msg.buf[2] | (msg.buf[3] << 8));
+            brakeTempFL = brakeTempFLRaw * 0.1f;
+            brakeTempFR= brakeTempFRRaw * 0.1f;
             break;
 
 
         }
         case 7:{
-            // int32_t brakeTempRLRaw = (msg.buf[0] | (msg.buf[1] << 8));
-            // int32_t brakeTempRRRaw = (msg.buf[2] | (msg.buf[3] << 8));
-            // brakeTempRL = brakeTempRLRaw * 0.1f;
-            // brakeTempRR = brakeTempRRRaw * 0.1f;
+            int32_t brakeTempRLRaw = (msg.buf[0] | (msg.buf[1] << 8));
+            int32_t brakeTempRRRaw = (msg.buf[2] | (msg.buf[3] << 8));
+            brakeTempRL = brakeTempRLRaw * 0.1f;
+            brakeTempRR = brakeTempRRRaw * 0.1f;
 
-            // if(brakeTempFL > brakeTempFR && brakeTempFL > brakeTempRL && brakeTempFL > brakeTempRR){
-            //     NextionInterface::setBrakeTemp(brakeTempFL, "Front Left");
-            // }
-            // else if(brakeTempFR > brakeTempFL && brakeTempFR > brakeTempRL && brakeTempFR > brakeTempRR){
-            //     NextionInterface::setBrakeTemp(brakeTempFR, "Front Right");
-            // }
-            // else if(brakeTempRL > brakeTempFL && brakeTempRL > brakeTempFR && brakeTempRL > brakeTempRR){
-            //     NextionInterface::setBrakeTemp(brakeTempRL, "Back Left");
-            // }
-            // else NextionInterface::setBrakeTemp(brakeTempRR, "Back Right");
+            if(brakeTempFL > brakeTempFR && brakeTempFL > brakeTempRL && brakeTempFL > brakeTempRR){
+                NextionInterface::setBrakeTemp(brakeTempFL, "Front Left");
+            }
+            else if(brakeTempFR > brakeTempFL && brakeTempFR > brakeTempRL && brakeTempFR > brakeTempRR){
+                NextionInterface::setBrakeTemp(brakeTempFR, "Front Right");
+            }
+            else if(brakeTempRL > brakeTempFL && brakeTempRL > brakeTempFR && brakeTempRL > brakeTempRR){
+                NextionInterface::setBrakeTemp(brakeTempRL, "Back Left");
+            }
+            else NextionInterface::setBrakeTemp(brakeTempRR, "Back Right");
             break;
 
         }
