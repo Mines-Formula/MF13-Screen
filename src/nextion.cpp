@@ -25,7 +25,7 @@ bool NextionInterface::MLIBool = false;
 bool NextionInterface::messageBool = false;
 bool NextionInterface::warningBool = false;
 
-int8_t NextionInterface::Driver=0;
+int8_t NextionInterface::Driver=-1;
 String NextionInterface::Drivers[5] = {"Austin", "Sammy","Jimmy","Schimmy","Noah"};
 NextionInterface::NextionInterface() {}
 
@@ -33,9 +33,9 @@ void NextionInterface::init() {
     Serial2.begin(9600);
     delay(200);
     DEBUG_PRINT("Nextion Setup");
-    switchToLoading();
+    //switchToLoading();
     setDriver(1);
-    showWarning("Something Went Wrong");
+    //showWarning("Something Went Wrong");
     
     
     
@@ -362,10 +362,10 @@ void NextionInterface::showWarning(const String WARNING) {
     if(warningMessage != WARNING){
         warningMessage=WARNING;
         //set the background
-        sendNextionMessage("DIAGNOSTICS.bco=53248");
-        sendNextionMessage("DRIVER.bco=53248");
-        sendNextionMessage("DRIVERnoah.bco=53248");
-        sendNextionMessage("DRIVERaust.bco=53248");
+        sendNextionMessage("DIAGNOSTICS.bco=20480");
+        sendNextionMessage("DRIVER.bco=20480");
+        sendNextionMessage("DRIVERnoah.bco=20480");
+        sendNextionMessage("DRIVERaust.bco=20480");
    
         
         
