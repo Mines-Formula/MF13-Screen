@@ -160,8 +160,9 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             bool coolantTempWarning = msg.buf[5] & coolantMask;
             bool oilTempWarning = msg.buf[5] & oilTempMask;
             bool oilPressureWarning = msg.buf[5] & oilPressureMask;
-            bool fuelPressureWarning = msg.buf[5] & fuelPressureMask;            
+            bool fuelPressureWarning = msg.buf[5] & fuelPressureMask;
 
+            Serial.println(msg.timestamp);            
             Serial.println(msg.buf[0]);
             Serial.println(msg.buf[1]);
             Serial.println(msg.buf[2]);
@@ -169,6 +170,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             Serial.println(msg.buf[4]);
             Serial.println(msg.buf[5]);
             Serial.println(msg.buf[6]);
+            Serial.println(msg.buf[7]);
             Serial.println("_________");
 
             // if (coolantTempWarning ) {

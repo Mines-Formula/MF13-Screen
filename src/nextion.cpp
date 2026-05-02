@@ -34,7 +34,7 @@ void NextionInterface::init() {
     delay(200);
     DEBUG_PRINT("Nextion Setup");
     //switchToLoading();
-    setDriver(1);
+    //setDriver(1);
     //showWarning("Something Went Wrong");
     
     
@@ -126,6 +126,10 @@ void NextionInterface::setVoltage(float value) {
 }
 void NextionInterface::setDriver(int value){
     String instruction;
+    if(Driver==-1){
+        Driver=value;
+        return
+    }
     if(value!=Driver){
         Driver=value;
         if (Driver==0){
