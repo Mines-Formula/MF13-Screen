@@ -153,27 +153,27 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
         // 1612: Warning flags
         case 1612: {
             // Bit masks (byte 5)
-            constexpr uint8_t coolantMask     = 0b10000000; // bit 0
-            constexpr uint8_t oilTempMask     = 0b00010000; // bit 3
-            constexpr uint8_t oilPressureMask = 0b00001000; // bit 4
-            constexpr uint8_t fuelPressureMask= 0b00000001; // bit 6
+            constexpr uint8_t coolantMask     = 0b00000001; // bit 0
+            constexpr uint8_t oilTempMask     = 0b00001000; // bit 3
+            constexpr uint8_t oilPressureMask = 0b00010000; // bit 4
+            constexpr uint8_t fuelPressureMask= 0b10000000; // bit 6
             bool coolantTempWarning = msg.buf[5] & coolantMask;
             bool oilTempWarning = msg.buf[5] & oilTempMask;
             bool oilPressureWarning = msg.buf[5] & oilPressureMask;
             bool fuelPressureWarning = msg.buf[5] & fuelPressureMask;            
 
-            if (coolantTempWarning ) {
-                NextionInterface::showWarning("Coolant Temp Warning");
-            } else if(oilTempWarning){
-                NextionInterface::showWarning("Oil Temp Warning");
-            } else if(oilPressureWarning){
-                NextionInterface::showWarning("Oil Pressure Warning");
-            } else if(fuelPressureWarning){
-                NextionInterface::showWarning("Fuel Pressure Warning");
-            }
-                else {
-                NextionInterface::switchToDriver();
-            }
+            // if (coolantTempWarning ) {
+            //     NextionInterface::showWarning("Coolant Temp Warning");
+            // } else if(oilTempWarning){
+            //     NextionInterface::showWarning("Oil Temp Warning");
+            // } else if(oilPressureWarning){
+            //     NextionInterface::showWarning("Oil Pressure Warning");
+            // } else if(fuelPressureWarning){
+            //     NextionInterface::showWarning("Fuel Pressure Warning");
+            // }
+            //     else {
+            //     NextionInterface::showWarning("");
+            // }
             break;
         }
           
@@ -320,7 +320,7 @@ NextionInterface::setGear(0);
 void CanInterface::canRecieveFailure(){
     //Serial.println(lastCanMessageTimeStamp);
 
-    if (millis()- lastCanMessageTimeStamp > 100){
+    if (millis()- lastCanMessageTimeStamp > 1000){
         RevLight.noCanMessageWarning();
         
     }

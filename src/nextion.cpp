@@ -129,7 +129,8 @@ void NextionInterface::setDriver(int value){
     if(value!=Driver){
         Driver=value;
         if (Driver==0){
-            switchToDiagnostic();
+            //switchToDiagnostic();
+            sendNextionMessage("page DIAGNOSTICS");
             instruction = "driverVar.txt=\"Dnostic\"";
     
         }else if(Driver==1){
@@ -141,10 +142,10 @@ void NextionInterface::setDriver(int value){
             instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
 
         }else{
-        sendNextionMessage("page DRIVER");
+            sendNextionMessage("page DRIVER");
         //send driver name
         if(value-1<sizeof(Drivers)/sizeof(Drivers[0])){
-        instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
+            instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
         }else{
             instruction = "driverVar.txt=\"No Driver Set\"";
         }
