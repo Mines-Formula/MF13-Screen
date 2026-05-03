@@ -105,6 +105,9 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
         
      
 
+        //if your case is missing a break it will break everything; just remember that there should be a break after every case!!!!!
+
+
          // 1613: Gear
          case 1613: {
             // Serial.printf("Gear: %d", millis());
@@ -113,7 +116,6 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             numGear=msg.buf[6] & 15; 
             NextionInterface::setGear(numGear); //filter the byte
             
-
             break;
         }
 
@@ -147,6 +149,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
   
             Serial.println((msg.buf[0] << 8 | msg.buf[1])/1000);
             NextionInterface::setDriver((msg.buf[0] << 8 | msg.buf[1])/1000);
+            break;
             
         }
 
@@ -174,18 +177,18 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             Serial.println(msg.buf[7]);
             Serial.println("_________");
 
-            // if (coolantTempWarning ) {
-            //     NextionInterface::showWarning("Coolant Temp Warning");
-            // } else if(oilTempWarning){
-            //     NextionInterface::showWarning("Oil Temp Warning");
-            // } else if(oilPressureWarning){
-            //     NextionInterface::showWarning("Oil Pressure Warning");
-            // } else if(fuelPressureWarning){
-            //     NextionInterface::showWarning("Fuel Pressure Warning");
-            // }
-            //     else {
-            //     NextionInterface::showWarning("");
-            // }
+            if (coolantTempWarning ) {
+                NextionInterface::showWarning("Coolant Temp Warning");
+            } else if(oilTempWarning){
+                NextionInterface::showWarning("Oil Temp Warning");
+            } else if(oilPressureWarning){
+                NextionInterface::showWarning("Oil Pressure Warning");
+            } else if(fuelPressureWarning){
+                NextionInterface::showWarning("Fuel Pressure Warning");
+            }
+                else {
+                NextionInterface::showWarning("");
+            }
             break;
         }
         

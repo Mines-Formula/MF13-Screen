@@ -128,7 +128,7 @@ void NextionInterface::setDriver(int value){
     String instruction;
     if(Driver==-1){
         Driver=value;
-        return
+        return;
     }
     if(value!=Driver){
         Driver=value;
