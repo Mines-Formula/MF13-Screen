@@ -178,13 +178,13 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             // Serial.println("_________");
 
             if (coolantTempWarning ) {
-                NextionInterface::showWarning("Coolant Temp Warning");
+                NextionInterface::showWarning("Fuel Pressure Warning"); //Coolant Temp Warning //coolent and fule pressure and the other tw 
             } else if(oilTempWarning){
-                NextionInterface::showWarning("Oil Temp Warning");
+                NextionInterface::showWarning("Oil Pressure Warning"); // Oil Temp Warning
             } else if(oilPressureWarning){
-                NextionInterface::showWarning("Oil Pressure Warning");
+                NextionInterface::showWarning("Oil Temp Warning"); //Oil Pressure Warning
             } else if(fuelPressureWarning){
-                NextionInterface::showWarning("Fuel Pressure Warning");
+                NextionInterface::showWarning("Coolant Temp Warning"); //Fuel Pressure Warning
             }
                 else {
                 NextionInterface::showWarning("");
