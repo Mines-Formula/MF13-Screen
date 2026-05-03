@@ -165,17 +165,17 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             bool oilPressureWarning = msg.buf[5] & oilPressureMask;
             bool fuelPressureWarning = msg.buf[5] & fuelPressureMask;
 
-            Serial.println("_________");
-            Serial.println(msg.timestamp);            
-            Serial.println(msg.buf[0]);
-            Serial.println(msg.buf[1]);
-            Serial.println(msg.buf[2]);
-            Serial.println(msg.buf[3]);
-            Serial.println(msg.buf[4]);
-            Serial.println(msg.buf[5]);
-            Serial.println(msg.buf[6]);
-            Serial.println(msg.buf[7]);
-            Serial.println("_________");
+            // Serial.println("_________");
+            // Serial.println(msg.timestamp);            
+            // Serial.println(msg.buf[0]);
+            // Serial.println(msg.buf[1]);
+            // Serial.println(msg.buf[2]);
+            // Serial.println(msg.buf[3]);
+            // Serial.println(msg.buf[4]);
+            // Serial.println(msg.buf[5]);
+            // Serial.println(msg.buf[6]);
+            // Serial.println(msg.buf[7]);
+            // Serial.println("_________");
 
             if (coolantTempWarning ) {
                 NextionInterface::showWarning("Coolant Temp Warning");
