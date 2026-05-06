@@ -99,7 +99,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
 
     count++;
-    // Serial.println("AHHH");
+    
     switch (msg.id) {
    
         
@@ -110,9 +110,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
 
          // 1613: Gear
          case 1613: {
-            // Serial.printf("Gear: %d", millis());
-            // Serial.print(" ");
-            // Serial.println(msg.buf[6] & 15);
+   
             numGear=msg.buf[6] & 15; 
             NextionInterface::setGear(numGear); //filter the byte
             
@@ -142,12 +140,8 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
         }
         //driver switch 
         case 0x07F2: {
-            // for (int i = 0; i <2; i++) {
-            // Serial.print(msg.buf[i]);
-            // //Serial.print("\t"); // Adds a tab space between bytes for alignment
-            // }
+
   
-            Serial.println((msg.buf[0] << 8 | msg.buf[1])/1000);
             NextionInterface::setDriver((msg.buf[0] << 8 | msg.buf[1])/1000);
             break;
             
@@ -165,17 +159,6 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             bool oilPressureWarning = msg.buf[5] & oilPressureMask;
             bool fuelPressureWarning = msg.buf[5] & fuelPressureMask;
 
-            // Serial.println("_________");
-            // Serial.println(msg.timestamp);            
-            // Serial.println(msg.buf[0]);
-            // Serial.println(msg.buf[1]);
-            // Serial.println(msg.buf[2]);
-            // Serial.println(msg.buf[3]);
-            // Serial.println(msg.buf[4]);
-            // Serial.println(msg.buf[5]);
-            // Serial.println(msg.buf[6]);
-            // Serial.println(msg.buf[7]);
-            // Serial.println("_________");
 
             if (coolantTempWarning ) {
                 NextionInterface::showWarning("Fuel Pressure Warning"); //Coolant Temp Warning //coolent and fule pressure and the other tw 
@@ -200,21 +183,21 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
                     NextionInterface::setWaterPumpBool(msg.buf[1]);
                 } 
                 else
-                    Serial.println("Water Pump Error");
+                    DEBUG_PRINT("Water Pump Error\n");
 
                 if(msg.buf[0] == 0 || msg.buf[0] == 1){
                     //NextionInterface::setFuelPumpValue(msg.buf[0]);
                     NextionInterface::setFuelPumpBool(msg.buf[0]);
                 }   
                 else
-                    Serial.println("Fuel Pump Error");
+                    DEBUG_PRINT("Fuel Pump Error\n");
 
                 if(msg.buf[3] == 0 || msg.buf[3] == 1){
 
                     NextionInterface::setFanBool(msg.buf[3]);
                 }
                 else
-                    DEBUG_PRINT("Fan Error");
+                    DEBUG_PRINT("Fan Error\n");
             }
              break;
         }
@@ -331,7 +314,7 @@ NextionInterface::setGear(0);
 
 
 void CanInterface::canRecieveFailure(){
-    //Serial.println(lastCanMessageTimeStamp);
+
 
     if (millis()- lastCanMessageTimeStamp > 1000){
         RevLight.noCanMessageWarning();
