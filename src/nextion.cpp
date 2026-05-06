@@ -2,7 +2,7 @@
 //Inits Nextion as Loading Screen
 page NextionInterface::current_page = page::LOADING;
 //Sets initial value
-uint16_t NextionInterface::engineRPM = -1;
+uint16_t NextionInterface::engineRPM = 0;
 uint8_t NextionInterface::waterTemp = -1;
 uint8_t NextionInterface::oilTemp = -1;
 uint16_t NextionInterface::oilPressure = -1;
