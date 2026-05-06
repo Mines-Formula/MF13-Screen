@@ -34,6 +34,8 @@ private:
 
     static int const GREEN_BUTTON_ID = 5;
     static int const RED_BUTTON_ID = 4;
+
+    static int const NextionWarningRed = 20480;
     
     static bool waterPumpBool;
     static bool oilTempBool;
@@ -62,7 +64,8 @@ private:
     static uint16_t currentMessage;
     static double prevLapTime;
     static int8_t Driver;
-    static String Drivers[6];
+    static int8_t const driverCount=6;
+    static String Drivers[driverCount];
     
 public:
     NextionInterface();
@@ -261,18 +264,19 @@ public:
      */
     static void switchToStartUp();
 
-    /**
-     * @brief Switch Screen to Driver
-     * 
-     */
-    static void switchToDriver();
-
+   
     /**
      * @brief Switch to Yippee DO NOT USE FOR FUN
      * 
      */
     static void switchToYippee();
+
+    /**
+     * @brief sets background screen color
+     * 
+     */
     
+    static void setScreenColor(int color);
     /**
      * @brief Switch Screen to Warning
      * 
@@ -282,6 +286,16 @@ public:
     /**
      *@brief Switch Screen to Diagnostic  */ 
     static void switchToDiagnostic();
+     /**
+     *@brief Switch Screen to Driver  */ 
+    static void switchToDriver();
+     /**
+     *@brief Switch Screen to DriverNoah  */ 
+    static void switchToDriverNoah();
+         /**
+     *@brief Switch Screen to DriverAust  */ 
+    static void switchToDriverAust();
+    
 
     /**
      * @brief Get the Current Page
