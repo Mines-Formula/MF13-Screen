@@ -62,7 +62,7 @@ private:
     static uint16_t currentMessage;
     static double prevLapTime;
     static int8_t Driver;
-    static String Drivers[5];
+    static String Drivers[6];
     
 public:
     NextionInterface();

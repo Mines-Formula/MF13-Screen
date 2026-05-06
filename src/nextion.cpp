@@ -26,7 +26,7 @@ bool NextionInterface::messageBool = false;
 bool NextionInterface::warningBool = false;
 
 int8_t NextionInterface::Driver=-1;
-String NextionInterface::Drivers[5] = {"Austin", "Sammy","Jimmy","Schimmy","Noah"};
+String NextionInterface::Drivers[6] = {"Austin", "Sammy","Jimmy","Schimmy","Noah","Sammy"};
 NextionInterface::NextionInterface() {}
 
 void NextionInterface::init() {
@@ -130,14 +130,16 @@ void NextionInterface::setDriver(int value){
         Driver=value;
         return;
     }
+    
     if(value!=Driver){
+        
         Driver=value;
         if (Driver==0){
             //switchToDiagnostic();
             sendNextionMessage("page DIAGNOSTICS");
             instruction = "driverVar.txt=\"Dnostic\"";
     
-        }else if(Driver==1){
+        }else if(Driver==1 /*Austin*/|| Driver==2 /*Sammy*/ || Driver==6 /*Sammy*/ || Driver==4 /*Shimmy*/){
             sendNextionMessage("page DRIVERaust");
             instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
             
@@ -201,6 +203,8 @@ void NextionInterface::setGear(int value) {
 
 // Set Lambda
 void NextionInterface::setLambda(float value) {
+    value*=0.01;
+    Serial.println(value);
     if (value != lambda) {
         lambda = value;
         
