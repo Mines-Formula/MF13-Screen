@@ -2,11 +2,11 @@
 //Inits Nextion as Loading Screen
 page NextionInterface::current_page = page::LOADING;
 //Sets initial value
-uint16_t NextionInterface::engineRPM = 999;
+uint16_t NextionInterface::engineRPM = 0;
 uint8_t NextionInterface::waterTemp = -1;
 uint8_t NextionInterface::oilTemp = -1;
-uint16_t NextionInterface::oilPressure = 999;
-float NextionInterface::batteryVoltage = 999;
+uint16_t NextionInterface::oilPressure = -1;
+float NextionInterface::batteryVoltage = -1;
 float NextionInterface::lambda = -1;
 int8_t NextionInterface::gear = -1;
 uint16_t NextionInterface::delta = 0;
@@ -14,6 +14,7 @@ uint16_t NextionInterface::prevmph = -1;
 uint16_t NextionInterface::currentMessage = 0;
 double NextionInterface::prevLapTime = -1;
 uint8_t NextionInterface::brakeTempPrev = 0;
+String NextionInterface::warningMessage="";
 bool NextionInterface::waterPumpBool = false;
 bool NextionInterface::oilTempBool = false;
 bool NextionInterface::oilPumpBool = false;
@@ -22,17 +23,21 @@ bool NextionInterface::fanBool = false;
 bool NextionInterface::fuelPumpBool = false;
 bool NextionInterface::MLIBool = false;
 bool NextionInterface::messageBool = false;
+bool NextionInterface::warningBool = false;
 
-int8_t NextionInterface::Driver=0;
-String NextionInterface::Drivers[5] = {"Austin", "Sammy","Jimmy","Schimmy","Noah"};
+int8_t NextionInterface::Driver=-1;
+String NextionInterface::Drivers[6] = {"Austin", "Sammy","Jimmy","Schimmy","Noah","Sammy"};
 NextionInterface::NextionInterface() {}
 
 void NextionInterface::init() {
     Serial2.begin(9600);
     delay(200);
     DEBUG_PRINT("Nextion Setup");
-    switchToLoading();
-    setDriver(1);
+
+
+ 
+    
+    
     
 }
 //Converts the given value from Celsius to Farenheight
@@ -64,12 +69,19 @@ void NextionInterface::switchScreenUpdate(){
     instruction = "messageDriver.txt=\"" + String(currentMessage) + "\"";
     sendNextionMessage(instruction);
     }
-    instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
+    if(current_page == page::DIAGNOSTICS){
+        instruction = "rpmVar.txt=\"" + String(round(engineRPM*1.4), 0) + "\"";
+    }else{
+        instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
+    }
     sendNextionMessage(instruction);
     if (gear == 0){
             instruction = "gearShiftVar.txt=\"" + String('N') + '\"';
             
-        }else{
+    }else if(gear==-1){
+        instruction = "gearShiftVar.txt=\"" + String('Q') + '\"';
+
+    }else{
             instruction = "gearShiftVar.txt=\"" + String(gear) + '\"';
             
         }
@@ -118,26 +130,43 @@ void NextionInterface::setVoltage(float value) {
 }
 void NextionInterface::setDriver(int value){
     String instruction;
-    if(value!=Driver){
+    if(Driver==-1){
         Driver=value;
-    if(value==0){
-        //Go To
-        switchToDiagnostic();
-        //if dial is spinny remove driver from the diagnostic display
-        instruction = "driverVar.txt=\"Dnostic\"";
-    }else{
-        //Ensure on driver scrren
-        switchToDriver();
+        return;
+    }
+    
+    if(value!=Driver){
+        
+        Driver=value;
+        if (Driver==0){
+            switchToDiagnostic();
+            instruction = "driverVar.txt=\"Dnostic\"";
+    
+        }else if(Driver==1 /*Austin*/|| Driver==2 /*Sammy*/ || Driver==6 /*Sammy*/ || Driver==4 /*Shimmy*/){
+            switchToDriverAust();
+  
+            instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
+            
+        }else if(Driver==5 /*Noah*/){
+            switchToDriverNoah();
+            instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
+
+        }else{
+            switchToDriver();
         //send driver name
-        if(value-1<sizeof(Drivers)/sizeof(Drivers[0])){
-        instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
+        if(value-1<driverCount){
+            instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
         }else{
             instruction = "driverVar.txt=\"No Driver Set\"";
         }
+        }
         
+        sendNextionMessage(instruction);
+   
     }
-    }
-    sendNextionMessage(instruction);
+    
+    
+    
 
 }
 //Send a message to the driver
@@ -155,8 +184,12 @@ void NextionInterface::setRPM(uint16_t value) {
     value = value*50;
     if(value != engineRPM){
         engineRPM = value;
-
-        String instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
+        String instruction;
+        if(current_page == page::DIAGNOSTICS){
+        instruction = "rpmVar.txt=\"" + String(round(engineRPM*1.4), 0) + "\"";
+        }else{
+        instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
+        }
         sendNextionMessage(instruction);
     }
 }
@@ -176,6 +209,7 @@ void NextionInterface::setGear(int value) {
 
 // Set Lambda
 void NextionInterface::setLambda(float value) {
+    value*=0.01;
     if (value != lambda) {
         lambda = value;
         
@@ -302,39 +336,90 @@ void NextionInterface::switchToStartUp() {
     }
 }
 
-void NextionInterface::switchToDriver() {
-    if(current_page != page::DRIVER){
-        sendNextionMessage("page DRIVER");
-        if(current_page == page::DIAGNOSTICS){
-            //pull data from last view and move it to next
-            switchScreenUpdate();
-        }
-        current_page = page::DRIVER;
-        
-    }
-}
 
 void NextionInterface::switchToDiagnostic(){
     if(current_page != page::DIAGNOSTICS){
         sendNextionMessage("page DIAGNOSTICS");
-        if(current_page == page::DRIVER){
-            //pull data from last view and move it to next
-            switchScreenUpdate();
-        }
+        switchScreenUpdate();
         current_page = page::DIAGNOSTICS;
     }
 }
+void NextionInterface::switchToDriver(){
+    if(current_page != page::DRIVER){
+        sendNextionMessage("page DRIVER");
+        switchScreenUpdate();
+        current_page = page::DRIVER;
+        }
+        
+}
+void NextionInterface::switchToDriverNoah(){
+    if(current_page != page::DRIVERnoah){
+        sendNextionMessage("page DRIVERnoah");
+        switchScreenUpdate();
+        current_page = page::DRIVERnoah;
+        }
+        
+}
+void NextionInterface::switchToDriverAust(){
+    if(current_page != page::DRIVERaust){
+        sendNextionMessage("page DRIVERaust");
+        switchScreenUpdate();
+        current_page = page::DRIVERaust;
+        }
+        
+}
+
 
 void NextionInterface::switchToYippee() {
     
 }
+void NextionInterface::setScreenColor(int color){
+    String instruction;
+    switch (current_page) {
+        case page::DIAGNOSTICS:
+        instruction="DIAGNOSTICS";
+        break;
 
-void NextionInterface::switchToWarning(const String WARNING) {
-    // if(current_page != page::WARNING){
-    //     sendNextionMessage("page WARNING");
-    //     String instructionName = String("warningLabel.txt=\"") + WARNING + "\"";
-    //     current_page = page::WARNING;
-    // }
+
+        case page::DRIVER:
+        instruction="DRIVER";
+        break;
+
+
+        case page::DRIVERaust:
+        instruction="DRIVERaust";
+        break;
+
+
+        case page::DRIVERnoah:
+        instruction="DRIVERnoah";
+        break;
+
+    }
+    instruction+=".bco="+ String(color)+"\"";
+    sendNextionMessage(instruction);
+
+
+}
+void NextionInterface::showWarning(const String WARNING) {
+    warningBool=true;
+    if(warningMessage != WARNING){
+        warningMessage=WARNING;
+        setScreenColor(NextionWarningRed);
+ 
+        
+   
+        
+        
+        sendNextionMessage("vis warningLabel,1");
+        //set the text
+        String instruction = String("warningLabel.txt=\"") + WARNING + "\"";
+        //current_page = page::WARNING;
+        sendNextionMessage(instruction);
+
+        
+
+    }
 }
 
 

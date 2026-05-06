@@ -11,6 +11,8 @@ enum page
     LOADING,
     STARTUP,
     DRIVER,
+    DRIVERnoah,
+    DRIVERaust,
     YIPPEE,
     WARNING,
     DIAGNOSTICS
@@ -32,6 +34,8 @@ private:
 
     static int const GREEN_BUTTON_ID = 5;
     static int const RED_BUTTON_ID = 4;
+
+    static int const NextionWarningRed = 20480;
     
     static bool waterPumpBool;
     static bool oilTempBool;
@@ -42,6 +46,7 @@ private:
     static bool fanBool;
     static bool MLIBool;
     static bool messageBool;
+    static bool warningBool;
     static int image;
     static bool neutral;
     static uint8_t waterTemp;
@@ -49,6 +54,7 @@ private:
     static uint16_t oilPressure;
     static uint8_t brakeTempPrev;
     static float batteryVoltage;
+    static String warningMessage;
     static uint16_t engineRPM;
     //static uint16_t displayRPM;
     static float lambda;
@@ -58,7 +64,9 @@ private:
     static uint16_t currentMessage;
     static double prevLapTime;
     static int8_t Driver;
-    static String Drivers[5];
+    static int8_t const driverCount=6;
+    static String Drivers[driverCount];
+    
 public:
     NextionInterface();
     /**
@@ -256,27 +264,38 @@ public:
      */
     static void switchToStartUp();
 
-    /**
-     * @brief Switch Screen to Driver
-     * 
-     */
-    static void switchToDriver();
-
+   
     /**
      * @brief Switch to Yippee DO NOT USE FOR FUN
      * 
      */
     static void switchToYippee();
+
+    /**
+     * @brief sets background screen color
+     * 
+     */
     
+    static void setScreenColor(int color);
     /**
      * @brief Switch Screen to Warning
      * 
      */
-    static void switchToWarning(String WARNING);
+    static void showWarning(String WARNING);
 
     /**
      *@brief Switch Screen to Diagnostic  */ 
     static void switchToDiagnostic();
+     /**
+     *@brief Switch Screen to Driver  */ 
+    static void switchToDriver();
+     /**
+     *@brief Switch Screen to DriverNoah  */ 
+    static void switchToDriverNoah();
+         /**
+     *@brief Switch Screen to DriverAust  */ 
+    static void switchToDriverAust();
+    
 
     /**
      * @brief Get the Current Page
