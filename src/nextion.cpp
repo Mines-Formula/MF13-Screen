@@ -2,7 +2,7 @@
 //Inits Nextion as Loading Screen
 page NextionInterface::current_page = page::LOADING;
 //Sets initial value
-uint16_t NextionInterface::engineRPM = 999;
+uint16_t NextionInterface::engineRPM = -1;
 uint8_t NextionInterface::waterTemp = -1;
 uint8_t NextionInterface::oilTemp = -1;
 uint16_t NextionInterface::oilPressure = 999;
@@ -69,7 +69,11 @@ void NextionInterface::switchScreenUpdate(){
     instruction = "messageDriver.txt=\"" + String(currentMessage) + "\"";
     sendNextionMessage(instruction);
     }
-    instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
+    if(current_page == page::DIAGNOSTICS){
+        instruction = "rpmVar.txt=\"" + String(round(engineRPM*1.4), 0) + "\"";
+    }else{
+        instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
+    }
     sendNextionMessage(instruction);
     if (gear == 0){
             instruction = "gearShiftVar.txt=\"" + String('N') + '\"';
@@ -136,18 +140,22 @@ void NextionInterface::setDriver(int value){
         Driver=value;
         if (Driver==0){
             //switchToDiagnostic();
+            current_page = page::DIAGNOSTICS;
             sendNextionMessage("page DIAGNOSTICS");
             instruction = "driverVar.txt=\"Dnostic\"";
     
         }else if(Driver==1 /*Austin*/|| Driver==2 /*Sammy*/ || Driver==6 /*Sammy*/ || Driver==4 /*Shimmy*/){
+            current_page = page::DRIVERaust;
             sendNextionMessage("page DRIVERaust");
             instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
             
         }else if(Driver==5){
+            current_page = page::DRIVERnoah;
             sendNextionMessage("page DRIVERnoah");
             instruction = "driverVar.txt=\"" + String(Drivers[value-1]) + "\"";
 
         }else{
+            current_page = page::DRIVER;
             sendNextionMessage("page DRIVER");
         //send driver name
         if(value-1<sizeof(Drivers)/sizeof(Drivers[0])){
@@ -182,8 +190,12 @@ void NextionInterface::setRPM(uint16_t value) {
     value = value*50;
     if(value != engineRPM){
         engineRPM = value;
-
-        String instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
+        String instruction;
+        if(current_page == page::DIAGNOSTICS){
+        instruction = "rpmVar.txt=\"" + String(round(engineRPM*1.4), 0) + "\"";
+        }else{
+        instruction = "rpm.txt=\"" + String(engineRPM, DEC) + "\"";
+        }
         sendNextionMessage(instruction);
     }
 }
