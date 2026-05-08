@@ -47,7 +47,7 @@ short NextionInterface::ctof(short celsius) {
 }
 // Convert Kilometer per Hour to Miles per Hour
 short NextionInterface::kmhtomph(short kmh){
-    return (kmh /1.6);
+    return (kmh / 1.6);
 }
 //Sends Message to message
 void NextionInterface::sendNextionMessage(String message) {

@@ -184,21 +184,7 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
                 else {
                 NextionInterface::showWarning("");
             }
-            
-
-
-    // uint8_t intelVal = (msg.buf[6] & 0x06) >> 1;
-
-    // uint8_t motorolaVal = (msg.buf[6] & 0x60) >> 5;
-
-    // // Print to Serial for debugging
-    // Serial.print("Byte 6 Raw (Hex): ");
-    // Serial.print(msg.buf[6], HEX);
-    // Serial.print(" | Intel: ");
-    // Serial.print(intelVal);
-    // Serial.print(" | Motorola: ");
-    // Serial.println(motorolaVal);
-    // NextionInterface::setLaunchIndicator(motorolaVal);
+ 
     break;
 
         }
