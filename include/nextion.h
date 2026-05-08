@@ -36,6 +36,7 @@ private:
     static int const RED_BUTTON_ID = 4;
 
     static int const NextionWarningRed = 20480;
+    static int8_t launchState;
     
     static bool waterPumpBool;
     static bool oilTempBool;
@@ -166,6 +167,13 @@ public:
      * @param value 
      */
     static void setFuelPumpBool(bool value);
+
+    /**
+     * @brief Set the launch Indicator
+     * 
+     * @param value 
+     */
+    static void setLaunchIndicator(uint8_t value);
 
     /**
      * @brief Set the Fan Bool
