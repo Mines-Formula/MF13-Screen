@@ -34,6 +34,7 @@ void NextionInterface::init() {
     Serial2.begin(9600);
     delay(200);
     DEBUG_PRINT("Nextion Setup");
+  
 
 
  
@@ -415,7 +416,7 @@ void NextionInterface::setScreenColor(int color){
         break;}
 
     }
-    instruction+=".bco="+ String(color)+"\"";
+    instruction+=".bco="+ String(color, DEC);
     sendNextionMessage(instruction);
 
 
@@ -424,7 +425,12 @@ void NextionInterface::showWarning(const String WARNING) {
     warningBool=true;
     if(warningMessage != WARNING){
         warningMessage=WARNING;
-        setScreenColor(NextionWarningRed);
+        if(current_page == page::DRIVERaust){
+            setScreenColor(NextionWarningLightRed);
+
+        }else{
+        setScreenColor(NextionWarningDarkRed);
+        }
  
         
    

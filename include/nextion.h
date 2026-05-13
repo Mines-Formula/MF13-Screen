@@ -35,7 +35,9 @@ private:
     static int const GREEN_BUTTON_ID = 5;
     static int const RED_BUTTON_ID = 4;
 
-    static int const NextionWarningRed = 20480;
+    static int const NextionWarningDarkRed = 20480;
+    static int const NextionWarningLightRed = 64512;
+
     static int8_t launchState;
     
     static bool waterPumpBool;
