@@ -146,8 +146,20 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
             break;
             
         }
+        case 0x07F1:{
+    
+            if(msg.buf[2]==0x5F && msg.buf[3]==0x7F){
+                NextionInterface::setLaunchIndicator(1);
+            }else{
+                NextionInterface::setLaunchIndicator(0);
 
-        // 1612: Warning flags
+            }
+
+            break;
+        }
+
+
+        // 1612: Warning flags and launch
         case 1612: {
             // Bit masks (byte 5)
             constexpr uint8_t coolantMask     = 0b00000001; // bit 0
@@ -172,7 +184,9 @@ void CanInterface::receive_can_updates(const CAN_message_t &msg) {
                 else {
                 NextionInterface::showWarning("");
             }
-            break;
+ 
+    break;
+
         }
         
 

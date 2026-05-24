@@ -9,6 +9,7 @@ uint16_t NextionInterface::oilPressure = -1;
 float NextionInterface::batteryVoltage = -1;
 float NextionInterface::lambda = -1;
 int8_t NextionInterface::gear = -1;
+int8_t NextionInterface::launchState = 0;
 uint16_t NextionInterface::delta = 0;
 uint16_t NextionInterface::prevmph = -1;  
 uint16_t NextionInterface::currentMessage = 0;
@@ -33,6 +34,7 @@ void NextionInterface::init() {
     Serial2.begin(9600);
     delay(200);
     DEBUG_PRINT("Nextion Setup");
+  
 
 
  
@@ -46,7 +48,7 @@ short NextionInterface::ctof(short celsius) {
 }
 // Convert Kilometer per Hour to Miles per Hour
 short NextionInterface::kmhtomph(short kmh){
-    return (kmh /1.6);
+    return (kmh / 1.6);
 }
 //Sends Message to message
 void NextionInterface::sendNextionMessage(String message) {
@@ -57,6 +59,11 @@ void NextionInterface::sendNextionMessage(String message) {
     Serial2.write(255);
 }
 void NextionInterface::switchScreenUpdate(){
+    if(launchState==0){
+    setButtonImage("LaunchVar", 0);//red
+    }else{
+    setButtonImage("LaunchVar", 1);//green
+    }
     String instruction = "waterTempVar.txt=\"" + static_cast<String>(ctof(waterTemp)) + "F\"";
     sendNextionMessage(instruction);
     instruction = "oilTempVar.txt=\"" + static_cast<String>(ctof(oilTemp))+"F\"";
@@ -98,6 +105,19 @@ void NextionInterface::setWaterTemp(int value) {
         String instruction = "waterTempVar.txt=\"" + static_cast<String>(ctof(value)) + "F\"";
         sendNextionMessage(instruction);
     }
+}
+void NextionInterface::setLaunchIndicator(uint8_t value){
+
+    if(launchState != value){
+    launchState=value;
+    if(launchState==0){
+    setButtonImage("LaunchVar", 0);//red
+    }else{
+    setButtonImage("LaunchVar", 1);//green
+    }
+    }
+    
+
 }
 //Set Oil Temp
 void NextionInterface::setOilTemp(uint8_t value) {
@@ -376,27 +396,27 @@ void NextionInterface::switchToYippee() {
 void NextionInterface::setScreenColor(int color){
     String instruction;
     switch (current_page) {
-        case page::DIAGNOSTICS:
+        case page::DIAGNOSTICS:{
         instruction="DIAGNOSTICS";
         break;
+        }
 
-
-        case page::DRIVER:
+        case page::DRIVER:{
         instruction="DRIVER";
-        break;
+        break;}
 
 
-        case page::DRIVERaust:
+        case page::DRIVERaust:{
         instruction="DRIVERaust";
-        break;
+        break;}
 
 
-        case page::DRIVERnoah:
+        case page::DRIVERnoah:{
         instruction="DRIVERnoah";
-        break;
+        break;}
 
     }
-    instruction+=".bco="+ String(color)+"\"";
+    instruction+=".bco="+ String(color, DEC);
     sendNextionMessage(instruction);
 
 
@@ -405,7 +425,12 @@ void NextionInterface::showWarning(const String WARNING) {
     warningBool=true;
     if(warningMessage != WARNING){
         warningMessage=WARNING;
-        setScreenColor(NextionWarningRed);
+        if(current_page == page::DRIVERaust){
+            setScreenColor(NextionWarningLightRed);
+
+        }else{
+        setScreenColor(NextionWarningDarkRed);
+        }
  
         
    
